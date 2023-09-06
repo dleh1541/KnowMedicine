@@ -14,6 +14,8 @@ class _LoginPageState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> loginUser() async {
+    print('loginUser() 호출됨');
+
     const urlString = 'http://192.168.55.176:3306/login';
     // final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
     final url = Uri.parse(urlString);
@@ -28,8 +30,6 @@ class _LoginPageState extends State<LoginScreen> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-
-    print('loginUser() 호출됨');
 
     if (response.statusCode == 200) {
       // 서버로부터 응답을 성공적으로 받았을 때 실행할 코드

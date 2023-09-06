@@ -6,12 +6,15 @@ import "dart:io";
 import 'package:audioplayers/audioplayers.dart';
 
 class ResultScreen extends StatefulWidget {
-  String medicine;
+  // String medicine;
+  String data;
 
-  ResultScreen(this.medicine);
+  // ResultScreen(this.medicine);
+  ResultScreen(this.data);
 
   @override
-  State<StatefulWidget> createState() => myresultstateful(medicine);
+  // State<StatefulWidget> createState() => myresultstateful(medicine);
+  State<StatefulWidget> createState() => myresultstateful(data);
 }
 
 class myresultstateful extends State<ResultScreen> {
@@ -19,12 +22,15 @@ class myresultstateful extends State<ResultScreen> {
   final FlutterTts tts = FlutterTts();
   final TextEditingController controller =
       TextEditingController(text: 'Hello world');
-  String medicine;
+
+  // String medicine;
+  String data;
   double a = 0;
   int n = 0;
   late SharedPreferences prefs;
 
-  myresultstateful(this.medicine);
+  // myresultstateful(this.medicine);
+  myresultstateful(this.data);
 
   Duration time = Duration(seconds: 1);
   final effectsound = AudioPlayer();
@@ -39,7 +45,8 @@ class myresultstateful extends State<ResultScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    n = medicine_connect_num[medicine]!;
+    // n = medicine_connect_num[medicine]!;
+    n = 0;
     getoperate();
   }
 
@@ -157,6 +164,7 @@ class myresultstateful extends State<ResultScreen> {
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () {
+                    print(data);
                     if (tts_on == true) {
                       tts.speak(medicine_store[n].effecttxt);
                     }
@@ -197,6 +205,23 @@ class myresultstateful extends State<ResultScreen> {
                   },
                   child: Text(
                     medicine_store[n].cautiontxt,
+                    style: TextStyle(fontSize: 20),
+                  )),
+            ),
+            Container(
+              padding: const EdgeInsets.all(30.0),
+              color: Colors.white,
+              child: TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () {
+                    if (tts_on == true) {
+                      tts.speak(medicine_store[n].cautiontxt);
+                    }
+                  },
+                  child: Text(
+                    data,
                     style: TextStyle(fontSize: 20),
                   )),
             ),

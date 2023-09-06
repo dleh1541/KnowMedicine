@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:know_medicine/result.dart';
 import 'Previewpage.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:native_shutter_sound/native_shutter_sound.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras}) : super(key: key);
@@ -66,7 +68,7 @@ class _CameraPageState extends State<CameraPage> {
       await _cameraController.setFlashMode(FlashMode.off);
 
       // HTTP POST 요청
-      const urlString = 'http://192.168.55.176:3306/login';
+      const urlString = 'http://192.168.55.176:3306/photo';
       final uri = Uri.parse(urlString); // 엔드포인트 URL을 수정하세요.
       final request = http.MultipartRequest('POST', uri);
 
@@ -83,17 +85,28 @@ class _CameraPageState extends State<CameraPage> {
       if (response.statusCode == 200) {
         // 성공적으로 업로드된 경우 처리
         print('사진 업로드 성공');
+
+        final responseText = await response.stream.bytesToString();
+        print('서버에서 받은 텍스트 데이터: $responseText');
+
+        // ResultScreen으로 데이터를 전달하고 화면 전환
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultScreen(responseText),
+          ),
+        );
       } else {
         // 업로드 실패 또는 오류 처리
         print('사진 업로드 실패: ${response.reasonPhrase}');
       }
 
-      Navigator.push(
+/*      Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => PreviewPage(
                     picture: picture,
-                  )));
+                  )));*/
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
       return null;
