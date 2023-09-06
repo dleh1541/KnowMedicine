@@ -14,7 +14,9 @@ class _LoginPageState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> loginUser() async {
-    final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
+    const urlString = 'http://192.168.55.176:3306/login';
+    // final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
+    final url = Uri.parse(urlString);
 
     final response = await http.post(
       url,
@@ -45,6 +47,66 @@ class _LoginPageState extends State<LoginScreen> {
           return AlertDialog(
             title: Text("로그인 실패"),
             content: Text("아이디 또는 비밀번호가 잘못되었습니다."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("확인"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> logoutUser() async {
+    const urlString = 'http://192.168.55.176:3306/logout';
+    // final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
+    final url = Uri.parse(urlString);
+
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        'username': 'logoutTest_id',
+        'password': 'logoutTest_pw',
+      }),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print('logoutUser() 호출됨');
+
+    if (response.statusCode == 200) {
+      // 서버로부터 응답을 성공적으로 받았을 때 실행할 코드
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("로그아웃 성공"),
+            content: Text("로그아웃되었습니다."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("확인"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // 서버로부터 오류 응답을 받았을 때 실행할 코드
+      // 로그인 실패 또는 오류 처리
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("로그아웃 실패"),
+            content: Text("알 수 없는 오류로 로그아웃에 실패했습니다."),
             actions: [
               TextButton(
                 onPressed: () {
@@ -183,6 +245,29 @@ class _LoginPageState extends State<LoginScreen> {
                 ),
               ),
             ), // 로그인 버튼
+
+            Positioned(
+                left: 37,
+                top: 650,
+                child: Container(
+                  width: 291,
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: logoutUser,
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFF38BEEF),
+                    ),
+                    child: Text(
+                      '로그아웃',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                )), // 로그아웃 버튼
           ],
         ),
       ),
