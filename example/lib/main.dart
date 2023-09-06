@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '\one',
       routes: {
         // '\one': (context)=> SplashScreen(),
-        '\one': (context)=> LoginScreen(),
+        '\one': (context) => LoginScreen(),
         // '\one': (context) => SignupScreen(),
         // '\one': (context) => TestScreen(),
       },

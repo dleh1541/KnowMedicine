@@ -61,7 +61,7 @@ class _CameraPageState extends State<CameraPage> {
       await _cameraController.setFlashMode(FlashMode.auto);
       await _cameraController.setFocusMode(FocusMode.locked);
       await _cameraController.setExposureMode(ExposureMode.locked);
-      NativeShutterSound.play();
+      // NativeShutterSound.play();
       XFile picture = await _cameraController.takePicture();
       await _cameraController.setFocusMode(FocusMode.auto);
       await _cameraController.setExposureMode(ExposureMode.auto);
