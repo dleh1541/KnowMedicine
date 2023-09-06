@@ -1,0 +1,103 @@
+name: know_medicine
+description: Demonstrates how to use the flutter_vision plugin.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: ">=2.17.1 <3.0.0"
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  camera: ^0.10.5+2
+  cupertino_icons: ^1.0.5
+  flutter:
+    sdk: flutter
+  flutter_vision:
+    path: ../
+  image_picker: ^0.8.6+3
+
+  #input 안되면 빼버려
+  path_provider: ^2.0.15
+  path: ^1.8.3
+  flutter_spinkit: ^5.2.0
+  flutter_tts: 3.4.0
+  async: ^2.3.0
+  shared_preferences: ^2.1.1
+  audioplayers: ^4.0.0
+  native_shutter_sound: ^0.0.1
+  http: ^0.13.5
+
+dev_dependencies:
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^2.0.1
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+# The following section is specific to Flutter.
+flutter:
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/
+    - assets/label.txt
+    - assets/best_float32.tflite
+    - assets/soundeffect.wav
+    - assets/image/silla.png
+    - assets/image/logo.png
+    - assets/image/coronanegative.png
+    - assets/image/coronapositive.png
+    - assets/image/invalid.png
+    - assets/image/rapicol.png
+    - assets/image/bearse.png
+    - assets/image/benachio.png
+    - assets/image/carolb.png
+    - assets/image/doctorbearse.png
+    - assets/image/easyend.png
+    - assets/image/hwalmyeongsu.png
+    - assets/image/pancols.png
+    - assets/image/panpilin.png
+    - assets/image/sohajaim.png
+    - assets/image/tylenol.png
+    - assets/image/silla.svg
+    - assets/image/silla2.png
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
