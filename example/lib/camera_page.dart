@@ -122,6 +122,7 @@ class _CameraPageState extends State<CameraPage> {
       
       //로컬 저장소에서 accesstoken 불러오기
       final accessToken = prefs.getString('accessToken');
+      final user_id = prefs.getString('username');
       print(accessToken);
       // 사진 파일 추가
       final file = await http.MultipartFile.fromPath('photo', picture.path);
@@ -129,7 +130,10 @@ class _CameraPageState extends State<CameraPage> {
 
       // 필요한 경우 다른 데이터(헤더, 바디 등)를 추가
       request.headers['Authorization'] = 'Bearer $accessToken';
-      // request.fields['key'] = 'value';
+      // 'id' 필드에 'user_id' 추가
+      if (user_id != null) {
+        request.fields['id'] = user_id;
+      }
 
       final response = await request.send();
 
