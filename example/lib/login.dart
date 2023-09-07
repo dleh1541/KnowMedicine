@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:know_medicine/Signup.dart';
 import 'package:know_medicine/splash.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -12,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginPageState extends State<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  late SharedPreferences _prefs; // SharedPreferences 객체
 
   Future<void> loginUser() async {
     print('loginUser() 호출됨');
@@ -34,6 +39,12 @@ class _LoginPageState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       // 서버로부터 응답을 성공적으로 받았을 때 실행할 코드
       // 로그인 성공 또는 다른 작업 수행
+      // JSON 응답을 파싱하여 Map 형태로 변환
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      // "access_token" 값을 추출
+      String accessToken = responseData['access_token'];
+      _prefs.setString('accessToken', accessToken);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => SplashScreen()),
