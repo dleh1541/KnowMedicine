@@ -113,17 +113,22 @@ class _CameraPageState extends State<CameraPage> {
       await _cameraController.setExposureMode(ExposureMode.auto);
       await _cameraController.setFlashMode(FlashMode.off);
 
+      prefs = await SharedPreferences.getInstance();
+
       // HTTP POST 요청
       const urlString = 'http://192.168.55.176:3306/photo';
       final uri = Uri.parse(urlString); // 엔드포인트 URL을 수정하세요.
       final request = http.MultipartRequest('POST', uri);
-
+      
+      //로컬 저장소에서 accesstoken 불러오기
+      final accessToken = prefs.getString('accessToken');
+      print(accessToken);
       // 사진 파일 추가
       final file = await http.MultipartFile.fromPath('photo', picture.path);
       request.files.add(file);
 
       // 필요한 경우 다른 데이터(헤더, 바디 등)를 추가
-      // request.headers['Authorization'] = 'Bearer YourAccessToken';
+      request.headers['Authorization'] = 'Bearer $accessToken';
       // request.fields['key'] = 'value';
 
       final response = await request.send();

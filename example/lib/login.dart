@@ -16,10 +16,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginPageState extends State<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  late SharedPreferences _prefs; // SharedPreferences 객체
+  late SharedPreferences prefs; // SharedPreferences 객체
 
   Future<void> loginUser() async {
     print('loginUser() 호출됨');
+    prefs = await SharedPreferences.getInstance();
 
     const urlString = 'http://192.168.55.176:3306/login';
     // final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
@@ -44,7 +45,7 @@ class _LoginPageState extends State<LoginScreen> {
 
       // "access_token" 값을 추출
       String accessToken = responseData['access_token'];
-      _prefs.setString('accessToken', accessToken);
+      prefs.setString('accessToken', accessToken);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => SplashScreen()),
