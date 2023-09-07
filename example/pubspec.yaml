@@ -19,8 +19,8 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  flutter_vision:
-    path: ../
+#  flutter_vision:
+#    path: ../
   image_picker: ^0.8.6+3
 
   #input 안되면 빼버려
@@ -56,8 +56,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
-    - assets/label.txt
-    - assets/best_float32.tflite
+#    - assets/label.txt
+#    - assets/best_float32.tflite
     - assets/soundeffect.wav
     - assets/image/silla.png
     - assets/image/logo.png

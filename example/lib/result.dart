@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'store.dart';
@@ -20,6 +22,7 @@ class ResultScreen extends StatefulWidget {
 }
 
 class myresultstateful extends State<ResultScreen> {
+  PageController _pageController = PageController(initialPage: 0);
   bool tts_on = false;
   final FlutterTts tts = FlutterTts();
   final TextEditingController controller =
@@ -32,6 +35,7 @@ class myresultstateful extends State<ResultScreen> {
   int medicine_id = 0;
   int idx = 0;
   late SharedPreferences prefs;
+  bool isTtsSpeaking = false; // TTS가 읽고 있는지 여부를 나타내는 변수 추가
 
   // myresultstateful(this.medicine);
   myresultstateful(this.medicine_list);
@@ -41,9 +45,30 @@ class myresultstateful extends State<ResultScreen> {
   final audiopath = "soundeffect.wav";
 
   @override
-  void initstate() {
+  void initState() {
     super.initState();
     tts.setLanguage('ko-KR');
+    _setAwaitOptions();
+
+    Timer.periodic(Duration(seconds: 5), (Timer timer) {
+      if (!isTtsSpeaking) {
+        if (idx < medicine_list.length) {
+          idx++;
+        } else {
+          idx = 0;
+        }
+
+        _pageController.animateToPage(
+          idx,
+          duration: Duration(milliseconds: 350),
+          curve: Curves.easeIn,
+        );
+      }
+    });
+  }
+
+  Future _setAwaitOptions() async {
+    await tts.awaitSpeakCompletion(true);
   }
 
   @override
@@ -76,11 +101,19 @@ class myresultstateful extends State<ResultScreen> {
     }*/
 
     if (tts_on) {
-      tts.speak("${medicine_list[idx].name}입니다");
+      setState(() {
+        isTtsSpeaking = true;
+      });
+
+      await tts.speak("${medicine_list[idx].name}입니다");
       sleep(time);
-      tts.speak(medicine_list[idx].effect +
+      await tts.speak(medicine_list[idx].effect +
           medicine_list[idx].usage +
           medicine_list[idx].caution);
+
+      setState(() {
+        isTtsSpeaking = false;
+      });
     } else {
       effectsound.play(AssetSource(audiopath));
     }
@@ -165,6 +198,7 @@ class myresultstateful extends State<ResultScreen> {
     );
   }
 
+  // !!! 기존 코드 !!!
   Widget _buildItemCard(context) {
     return Stack(
       children: <Widget>[
@@ -202,6 +236,118 @@ class myresultstateful extends State<ResultScreen> {
   }
 
   Widget _buildPageContent(context) {
+    return Stack(
+      children: [
+        PageView.builder(
+          controller: _pageController,
+          itemCount: medicine_list.length,
+          itemBuilder: (context, index) {
+            return ListView(
+              children: [
+                // _buildItemCard(context, index),
+                _buildItemCard(context),
+
+                Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(30.0),
+                      color: Colors.white,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                        ),
+                        onPressed: () {
+                          if (tts_on == true) {
+                            tts.speak(medicine_list[index].effect);
+                          }
+                        },
+                        child: Text(
+                          '【효능·효과】\n${medicine_list[index].effect}',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(30.0),
+                      color: Colors.white,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                        ),
+                        onPressed: () {
+                          if (tts_on == true) {
+                            tts.speak(medicine_list[index].usage);
+                          }
+                        },
+                        child: Text(
+                          '【용법·용량】\n${medicine_list[index].usage}',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(30.0),
+                      color: Colors.white,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                        ),
+                        onPressed: () {
+                          if (tts_on == true) {
+                            tts.speak(medicine_list[index].caution);
+                          }
+                        },
+                        child: Text(
+                          '【주의사항】\n${medicine_list[index].caution}',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 200, // 빈 박스의 높이를 조정하십시오.
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+          onPageChanged: (int page) {
+            setState(() {
+              idx = page;
+            });
+            getoperate();
+          },
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            color: Colors.green,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                tts.speak(medicine_list[idx].effect +
+                    medicine_list[idx].usage +
+                    medicine_list[idx].caution);
+              },
+              child: const Text(
+                "한번 더 듣기",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+// !!! 기존 코드 !!!
+/*  Widget _buildPageContent(context) {
     return Column(
       children: <Widget>[
         Expanded(
@@ -299,5 +445,5 @@ class myresultstateful extends State<ResultScreen> {
         )
       ],
     );
-  }
+  }*/
 }
