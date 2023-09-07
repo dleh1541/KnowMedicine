@@ -4,17 +4,19 @@ import 'store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "dart:io";
 import 'package:audioplayers/audioplayers.dart';
+import 'package:know_medicine/camera_page.dart';
 
 class ResultScreen extends StatefulWidget {
   // String medicine;
-  String data;
+  // String data;
+  final List<Medicine> medicine_list;
 
   // ResultScreen(this.medicine);
-  ResultScreen(this.data);
+  ResultScreen(this.medicine_list);
 
   @override
   // State<StatefulWidget> createState() => myresultstateful(medicine);
-  State<StatefulWidget> createState() => myresultstateful(data);
+  State<StatefulWidget> createState() => myresultstateful(medicine_list);
 }
 
 class myresultstateful extends State<ResultScreen> {
@@ -24,13 +26,15 @@ class myresultstateful extends State<ResultScreen> {
       TextEditingController(text: 'Hello world');
 
   // String medicine;
-  String data;
-  double a = 0;
-  int n = 0;
+  // String data;
+  List<Medicine> medicine_list;
+  double tts_speed = 0;
+  int medicine_id = 0;
+  int idx = 0;
   late SharedPreferences prefs;
 
   // myresultstateful(this.medicine);
-  myresultstateful(this.data);
+  myresultstateful(this.medicine_list);
 
   Duration time = Duration(seconds: 1);
   final effectsound = AudioPlayer();
@@ -46,26 +50,37 @@ class myresultstateful extends State<ResultScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // n = medicine_connect_num[medicine]!;
-    n = 0;
+    // n = 0;
+    medicine_id = medicine_list[idx].id;
     getoperate();
   }
 
   getInitDate() async {
     prefs = await SharedPreferences.getInstance();
-    a = prefs.getDouble('speed') ?? 0.7;
-    tts.setSpeechRate(a);
+    tts_speed = prefs.getDouble('speed') ?? 0.7;
+    tts.setSpeechRate(tts_speed);
     tts_on = prefs.getBool('tts_switch') ?? false;
     setState(() {});
   }
 
   getoperate() async {
     await getInitDate();
-    if (tts_on) {
-      tts.speak(medicine_store[n].medicine_name + "입니다");
+/*    if (tts_on) {
+      tts.speak(medicine_store[medicine_id].medicine_name + "입니다");
       sleep(time);
-      tts.speak(medicine_store[n].effecttxt +
-          medicine_store[n].volumetxt +
-          medicine_store[n].cautiontxt);
+      tts.speak(medicine_store[medicine_id].effecttxt +
+          medicine_store[medicine_id].volumetxt +
+          medicine_store[medicine_id].cautiontxt);
+    } else {
+      effectsound.play(AssetSource(audiopath));
+    }*/
+
+    if (tts_on) {
+      tts.speak("${medicine_list[idx].name}입니다");
+      sleep(time);
+      tts.speak(medicine_list[idx].effect +
+          medicine_list[idx].usage +
+          medicine_list[idx].caution);
     } else {
       effectsound.play(AssetSource(audiopath));
     }
@@ -79,7 +94,8 @@ class myresultstateful extends State<ResultScreen> {
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.green,
-          title: Text(medicine_store[n].medicine_name),
+          // title: Text(medicine_store[n].medicine_name),
+          title: const Text('약품 정보'),
         ),
         drawer: Drawer(
             child: ListView(
@@ -116,7 +132,7 @@ class myresultstateful extends State<ResultScreen> {
             ),
             Row(
               children: [
-                Text(
+                const Text(
                   "      속도 조절",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -125,13 +141,13 @@ class myresultstateful extends State<ResultScreen> {
                 Slider(
                     min: 0.0,
                     max: 1.0,
-                    value: a,
+                    value: tts_speed,
                     onChanged: (double value) {
                       setState(() {
-                        a = value;
+                        tts_speed = value;
                         tts.stop();
-                        tts.setSpeechRate(a);
-                        prefs.setDouble('speed', a);
+                        tts.setSpeechRate(tts_speed);
+                        prefs.setDouble('speed', tts_speed);
                         tts.speak("이정도 속도로 말하게 됩니다");
                       });
                     }),
@@ -146,6 +162,42 @@ class myresultstateful extends State<ResultScreen> {
         tts.speak("원하시는 의약품을 촬영해주세요");
         return true;
       },
+    );
+  }
+
+  Widget _buildItemCard(context) {
+    return Stack(
+      children: <Widget>[
+        Card(
+          margin: const EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Image(
+                    // image: AssetImage(medicine_store[medicine_id].image_track),
+                    image: AssetImage(medicine_list[idx].thumbLink),
+                    height: 200,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Text(
+                  // medicine_store[medicine_id].medicine_name,
+                  medicine_list[idx].name,
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -164,13 +216,15 @@ class myresultstateful extends State<ResultScreen> {
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () {
-                    print(data);
+                    print(medicine_list);
                     if (tts_on == true) {
-                      tts.speak(medicine_store[n].effecttxt);
+                      // tts.speak(medicine_store[medicine_id].effecttxt);
+                      tts.speak(medicine_list[idx].effect);
                     }
                   },
                   child: Text(
-                    medicine_store[n].effecttxt,
+                    // medicine_store[medicine_id].effecttxt,
+                    '【효능·효과】\n${medicine_list[idx].effect}',
                     style: const TextStyle(fontSize: 20),
                   )),
             ),
@@ -183,11 +237,13 @@ class myresultstateful extends State<ResultScreen> {
                   ),
                   onPressed: () {
                     if (tts_on == true) {
-                      tts.speak(medicine_store[n].volumetxt);
+                      // tts.speak(medicine_store[medicine_id].volumetxt);
+                      tts.speak(medicine_list[idx].usage);
                     }
                   },
                   child: Text(
-                    medicine_store[n].volumetxt,
+                    // medicine_store[medicine_id].volumetxt,
+                    '【용법·용량】\n${medicine_list[idx].usage}',
                     style: const TextStyle(fontSize: 20),
                   )),
             ),
@@ -200,28 +256,14 @@ class myresultstateful extends State<ResultScreen> {
                   ),
                   onPressed: () {
                     if (tts_on == true) {
-                      tts.speak(medicine_store[n].cautiontxt);
+                      // tts.speak(medicine_store[medicine_id].cautiontxt);
+
+                      tts.speak(medicine_list[idx].caution);
                     }
                   },
                   child: Text(
-                    medicine_store[n].cautiontxt,
-                    style: TextStyle(fontSize: 20),
-                  )),
-            ),
-            Container(
-              padding: const EdgeInsets.all(30.0),
-              color: Colors.white,
-              child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.black,
-                  ),
-                  onPressed: () {
-                    if (tts_on == true) {
-                      tts.speak(medicine_store[n].cautiontxt);
-                    }
-                  },
-                  child: Text(
-                    data,
+                    // medicine_store[medicine_id].cautiontxt,
+                    '【주의사항】\n${medicine_list[idx].caution}',
                     style: TextStyle(fontSize: 20),
                   )),
             ),
@@ -237,50 +279,24 @@ class myresultstateful extends State<ResultScreen> {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () {
-                    tts.speak(medicine_store[n].effecttxt +
-                        medicine_store[n].volumetxt +
-                        medicine_store[n].cautiontxt);
+                    // tts.speak(medicine_store[medicine_id].effecttxt +
+                    //     medicine_store[medicine_id].volumetxt +
+                    //     medicine_store[medicine_id].cautiontxt);
+                    tts.speak(medicine_list[idx].effect +
+                        medicine_list[idx].usage +
+                        medicine_list[idx].caution);
                   },
-                  child: const Text("한번 더 들려드리겠습니다"),
+                  child: const Text(
+                    "한번 더 듣기",
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
               ),
             )
           ],
         )
-      ],
-    );
-  }
-
-  Widget _buildItemCard(context) {
-    return Stack(
-      children: <Widget>[
-        Card(
-          margin: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-          child: Container(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Image(
-                    image: AssetImage(medicine_store[n].image_track),
-                    height: 200,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                Text(
-                  medicine_store[n].medicine_name,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const SizedBox(
-                  height: 5.0,
-                ),
-              ],
-            ),
-          ),
-        ),
       ],
     );
   }

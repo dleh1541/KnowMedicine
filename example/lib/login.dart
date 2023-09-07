@@ -124,9 +124,11 @@ class _LoginPageState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+        body: SingleChildScrollView(
+      child: Container(
         width: double.infinity,
-        height: double.infinity,
+        // height: double.infinity,
+        height: MediaQuery.of(context).size.height,
         color: Colors.white,
         child: Stack(
           children: [
@@ -271,6 +273,6 @@ class _LoginPageState extends State<LoginScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

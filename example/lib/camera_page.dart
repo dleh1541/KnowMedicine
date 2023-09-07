@@ -9,6 +9,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:native_shutter_sound/native_shutter_sound.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras}) : super(key: key);
@@ -25,6 +26,7 @@ class _CameraPageState extends State<CameraPage> {
   late SharedPreferences prefs;
   final FlutterTts tts = FlutterTts();
   double a = 0;
+  bool isLoaded = true;
 
   @override
   void dispose() {
@@ -50,6 +52,45 @@ class _CameraPageState extends State<CameraPage> {
     tts.speak("원하시는 의약품을 촬영해주세요");
   }
 
+  // List<Medicine> parseMedicineList(String responseBody) {
+  //   final parsed = jsonDecode(responseBody);
+  //   final medicineList = parsed['medicine_list'] as List;
+  //   return medicineList.map((json) => Medicine.fromJson(json)).toList();
+  // }
+
+/*  List<Medicine> parseMedicineList(String responseBody) {
+    final parsed = jsonDecode(responseBody);
+*/ /*    final medicineListJson = parsed['medicine_list'] as List<dynamic>;
+
+    // medicine_listJson이 문자열로 파싱되었다면 JSON 형식으로 다시 파싱
+    final medicineList = medicineListJson
+        .map((json) => Medicine.fromJson(json as Map<String, dynamic>))
+        .toList();
+
+    return medicineList;*/ /*
+
+*/ /*    if (parsed is List<dynamic>) {
+      // JSON 배열로 파싱 가능한 경우
+      final medicineList = parsed
+          .map((json) => Medicine.fromJson(json as Map<String, dynamic>))
+          .toList();
+      return medicineList;
+    } else if (parsed is Map<String, dynamic> &&
+        parsed.containsKey('medicine_list')) {
+      // 문자열로 파싱된 경우 medicine_list 키로부터 JSON 배열 추출
+      final medicineListJson = parsed['medicine_list'] as List<dynamic>;
+      final medicineList = medicineListJson
+          .map((json) => Medicine.fromJson(json as Map<String, dynamic>))
+          .toList();
+      return medicineList;
+    } else {
+      // 다른 예외 처리 또는 오류 상황에 대한 처리
+      throw Exception('Invalid response format');
+    }*/ /*
+
+
+  }*/
+
   Future takePicture() async {
     if (!_cameraController.value.isInitialized) {
       return null;
@@ -57,6 +98,11 @@ class _CameraPageState extends State<CameraPage> {
     if (_cameraController.value.isTakingPicture) {
       return null;
     }
+
+    setState(() {
+      isLoaded = false;
+    });
+
     try {
       await _cameraController.setFlashMode(FlashMode.auto);
       await _cameraController.setFocusMode(FocusMode.locked);
@@ -89,16 +135,45 @@ class _CameraPageState extends State<CameraPage> {
         final responseText = await response.stream.bytesToString();
         print('서버에서 받은 텍스트 데이터: $responseText');
 
+        // final medicineList = parseMedicineList(responseText);
+
+        // JSON 문자열을 Map으로 파싱
+        Map<String, dynamic> jsonData = json.decode(responseText);
+
+        // "medicine_list" 키를 통해 Medicine 객체 목록으로 파싱
+        List<Medicine> medicineList = (jsonData['medicine_list'] as List)
+            .map((item) => Medicine.fromJson(item))
+            .toList();
+
+        setState(() {
+          isLoaded = true;
+        });
+
+        // Name이 "뒷면"인 Medicine 객체가 있는지 확인
+        bool containsBackSide =
+            medicineList.any((medicine) => medicine.name == '뒷면');
+
         // ResultScreen으로 데이터를 전달하고 화면 전환
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ResultScreen(responseText),
-          ),
-        );
+        if (medicineList.isNotEmpty && !containsBackSide) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              // builder: (context) => ResultScreen(responseText),
+              builder: (context) => ResultScreen(medicineList),
+            ),
+          );
+        } else if (containsBackSide) {
+          tts.speak("약품의 뒷면입니다. 뒤집어서 다시 촬영해주세요.");
+        } else {
+          tts.speak("다시 촬영해주세요");
+        }
       } else {
         // 업로드 실패 또는 오류 처리
         print('사진 업로드 실패: ${response.reasonPhrase}');
+        tts.speak('네트워크 오류입니다. 다시 시도해주세요.');
+        setState(() {
+          isLoaded = true;
+        });
       }
 
 /*      Navigator.push(
@@ -128,6 +203,18 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!isLoaded) {
+      return const Scaffold(
+        backgroundColor: Colors.green, //Colors.amber
+        body: Center(
+          child: SpinKitFadingCircle(
+            color: Colors.white,
+            size: 80.0,
+          ),
+        ),
+      );
+    }
+
     return WillPopScope(
       child: Scaffold(
           body: SafeArea(
@@ -180,6 +267,45 @@ class _CameraPageState extends State<CameraPage> {
       onWillPop: () async {
         return false;
       },
+    );
+  }
+}
+
+class Medicine {
+  final int id;
+  final String name;
+  final String thumbLink;
+  final String effectType;
+  final String effect;
+  final String usageType;
+  final String usage;
+  final String cautionType;
+  final String caution;
+
+  Medicine({
+    required this.id,
+    required this.name,
+    required this.thumbLink,
+    required this.effectType,
+    required this.effect,
+    required this.usageType,
+    required this.usage,
+    required this.cautionType,
+    required this.caution,
+  });
+
+  // JSON 데이터에서 Medicine 객체로 변환하는 팩토리 메서드
+  factory Medicine.fromJson(Map<String, dynamic> json) {
+    return Medicine(
+      id: json['ID'],
+      name: json['Name'],
+      thumbLink: json['ThubLink'],
+      effectType: json['Effect_Type'],
+      effect: json['Effect'],
+      usageType: json['Usage_Type'],
+      usage: json['Usage'],
+      cautionType: json['Caution_Type'],
+      caution: json['Caution'],
     );
   }
 }
