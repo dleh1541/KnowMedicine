@@ -119,7 +119,7 @@ class _CameraPageState extends State<CameraPage> {
       const urlString = 'http://192.168.55.176:3306/photo';
       final uri = Uri.parse(urlString); // 엔드포인트 URL을 수정하세요.
       final request = http.MultipartRequest('POST', uri);
-      
+
       //로컬 저장소에서 accesstoken 불러오기
       final accessToken = prefs.getString('accessToken');
       final user_id = prefs.getString('username');

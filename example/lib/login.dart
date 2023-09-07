@@ -6,8 +6,6 @@ import 'package:know_medicine/Signup.dart';
 import 'package:know_medicine/splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();

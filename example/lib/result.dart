@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'store.dart';
@@ -18,10 +17,10 @@ class ResultScreen extends StatefulWidget {
 
   @override
   // State<StatefulWidget> createState() => myresultstateful(medicine);
-  State<StatefulWidget> createState() => myresultstateful(medicine_list);
+  State<StatefulWidget> createState() => _ResultScreenState(medicine_list);
 }
 
-class myresultstateful extends State<ResultScreen> {
+class _ResultScreenState extends State<ResultScreen> {
   PageController _pageController = PageController(initialPage: 0);
   bool tts_on = false;
   final FlutterTts tts = FlutterTts();
@@ -38,11 +37,11 @@ class myresultstateful extends State<ResultScreen> {
   bool isTtsSpeaking = false; // TTS가 읽고 있는지 여부를 나타내는 변수 추가
 
   // myresultstateful(this.medicine);
-  myresultstateful(this.medicine_list);
+  _ResultScreenState(this.medicine_list);
 
   Duration time = Duration(seconds: 1);
-  final effectsound = AudioPlayer();
-  final audiopath = "soundeffect.wav";
+  final effectSound = AudioPlayer();
+  final audioPath = "soundeffect.wav";
 
   @override
   void initState() {
@@ -67,8 +66,10 @@ class myresultstateful extends State<ResultScreen> {
     });
   }
 
-  Future _setAwaitOptions() async {
-    await tts.awaitSpeakCompletion(true);
+  @override
+  void dispose() {
+    super.dispose();
+    tts.stop(); // 앱이 종료될 때 TTS 중지
   }
 
   @override
@@ -76,8 +77,12 @@ class myresultstateful extends State<ResultScreen> {
     super.didChangeDependencies();
     // n = medicine_connect_num[medicine]!;
     // n = 0;
-    medicine_id = medicine_list[idx].id;
+    // medicine_id = medicine_list[idx].id;
     getoperate();
+  }
+
+  Future _setAwaitOptions() async {
+    await tts.awaitSpeakCompletion(true);
   }
 
   getInitDate() async {
@@ -100,22 +105,28 @@ class myresultstateful extends State<ResultScreen> {
       effectsound.play(AssetSource(audiopath));
     }*/
 
+    if (isTtsSpeaking) {
+      tts.stop();
+    }
+
     if (tts_on) {
       setState(() {
         isTtsSpeaking = true;
       });
 
       await tts.speak("${medicine_list[idx].name}입니다");
-      sleep(time);
-      await tts.speak(medicine_list[idx].effect +
-          medicine_list[idx].usage +
-          medicine_list[idx].caution);
+      await Future.delayed(const Duration(milliseconds: 500));
+      await tts.speak(medicine_list[idx].effect);
+      await Future.delayed(const Duration(milliseconds: 500));
+      await tts.speak(medicine_list[idx].usage);
+      await Future.delayed(const Duration(milliseconds: 500));
+      await tts.speak(medicine_list[idx].caution);
 
       setState(() {
         isTtsSpeaking = false;
       });
     } else {
-      effectsound.play(AssetSource(audiopath));
+      effectSound.play(AssetSource(audioPath));
     }
   }
 
@@ -256,9 +267,12 @@ class myresultstateful extends State<ResultScreen> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (tts_on == true) {
-                            tts.speak(medicine_list[index].effect);
+                            if (isTtsSpeaking) {
+                              await tts.stop();
+                            }
+                            await tts.speak(medicine_list[index].effect);
                           }
                         },
                         child: Text(
@@ -274,9 +288,12 @@ class myresultstateful extends State<ResultScreen> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (tts_on == true) {
-                            tts.speak(medicine_list[index].usage);
+                            if (isTtsSpeaking) {
+                              await tts.stop();
+                            }
+                            await tts.speak(medicine_list[index].usage);
                           }
                         },
                         child: Text(
@@ -292,9 +309,12 @@ class myresultstateful extends State<ResultScreen> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (tts_on == true) {
-                            tts.speak(medicine_list[index].caution);
+                            if (isTtsSpeaking) {
+                              await tts.stop();
+                            }
+                            await tts.speak(medicine_list[index].caution);
                           }
                         },
                         child: Text(
@@ -328,10 +348,18 @@ class myresultstateful extends State<ResultScreen> {
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
               ),
-              onPressed: () {
-                tts.speak(medicine_list[idx].effect +
-                    medicine_list[idx].usage +
-                    medicine_list[idx].caution);
+              onPressed: () async {
+/*                if (isTtsSpeaking) {
+                  await tts.stop();
+                }
+
+                if (tts_on) {
+                  await tts.speak('${medicine_list[idx].name},');
+                  await tts.speak(medicine_list[idx].effect +
+                      medicine_list[idx].usage +
+                      medicine_list[idx].caution);
+                }*/
+                getoperate();
               },
               child: const Text(
                 "한번 더 듣기",
