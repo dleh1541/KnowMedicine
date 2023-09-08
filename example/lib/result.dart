@@ -49,7 +49,7 @@ class _ResultScreenState extends State<ResultScreen> {
     tts.setLanguage('ko-KR');
     _setAwaitOptions();
 
-    Timer.periodic(Duration(seconds: 5), (Timer timer) {
+    Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       if (!isTtsSpeaking) {
         if (idx < medicine_list.length) {
           idx++;
@@ -59,7 +59,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
         _pageController.animateToPage(
           idx,
-          duration: Duration(milliseconds: 350),
+          duration: const Duration(milliseconds: 350),
           curve: Curves.easeIn,
         );
       }
@@ -78,7 +78,7 @@ class _ResultScreenState extends State<ResultScreen> {
     // n = medicine_connect_num[medicine]!;
     // n = 0;
     // medicine_id = medicine_list[idx].id;
-    getoperate();
+    getOperate();
   }
 
   Future _setAwaitOptions() async {
@@ -93,7 +93,7 @@ class _ResultScreenState extends State<ResultScreen> {
     setState(() {});
   }
 
-  getoperate() async {
+  getOperate() async {
     await getInitDate();
 /*    if (tts_on) {
       tts.speak(medicine_store[medicine_id].medicine_name + "입니다");
@@ -114,6 +114,8 @@ class _ResultScreenState extends State<ResultScreen> {
         isTtsSpeaking = true;
       });
 
+      await Future.delayed(const Duration(milliseconds: 100));
+
       await tts.speak("${medicine_list[idx].name}입니다");
       await Future.delayed(const Duration(milliseconds: 500));
       await tts.speak(medicine_list[idx].effect);
@@ -131,6 +133,87 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   @override
+  // !!! 기존 코드 !!!
+/*
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.green,
+          // title: Text(medicine_store[n].medicine_name),
+          title: const Text('약품 정보'),
+        ),
+        drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+              const UserAccountsDrawerHeader(
+                currentAccountPicture: CircleAvatar(
+                  backgroundImage: AssetImage('assets/image/silla.png'),
+                ),
+                accountName: Text('신라시스템 인턴'),
+                accountEmail: Text('kgh@silla.com'),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10.0),
+                    bottomRight: Radius.circular(10.0),
+                  ),
+                ),
+              ),
+              SwitchListTile(
+                value: tts_on,
+                title: const Text(
+                  '말하기 기능',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onChanged: (bool value) {
+                  setState(() {
+                    tts_on = value;
+                    prefs.setBool('tts_switch', tts_on);
+                  });
+                },
+              ),
+              Row(
+                children: [
+                  const Text(
+                    "      속도 조절",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Slider(
+                      min: 0.0,
+                      max: 1.0,
+                      value: tts_speed,
+                      onChanged: (double value) {
+                        setState(() {
+                          tts_speed = value;
+                          tts.stop();
+                          tts.setSpeechRate(tts_speed);
+                          prefs.setDouble('speed', tts_speed);
+                          tts.speak("이정도 속도로 말하게 됩니다");
+                        });
+                      }),
+                ],
+              ),
+            ],
+        )),
+        body: _buildPageContent(context),
+      ),
+      onWillPop: () async {
+        tts.stop();
+        tts.speak("원하시는 의약품을 촬영해주세요");
+        return true;
+      },
+    );
+  }
+*/
+
   Widget build(BuildContext context) {
     return WillPopScope(
       child: Scaffold(
@@ -159,43 +242,93 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
               ),
             ),
-            SwitchListTile(
-              value: tts_on,
-              title: const Text(
-                '말하기 기능',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
+            // SwitchListTile(
+            //   value: tts_on,
+            //   title: const Text(
+            //     '말하기 기능',
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            //   onChanged: (bool value) {
+            //     setState(() {
+            //       tts_on = value;
+            //       prefs.setBool('tts_switch', tts_on);
+            //     });
+            //   },
+            // ),
+            Container(
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 30.0),
+              height: 100,
+              child: OutlinedButton(
+                onPressed: () {
+                  if (isTtsSpeaking) {
+                    tts.stop();
+                    setState(() {
+                      isTtsSpeaking = false;
+                    });
+                  }
+
+                  setState(() {
+                    tts_on = !tts_on; // tts_on 상태를 토글
+                    prefs.setBool(
+                        'tts_switch', tts_on); // 변경된 상태를 SharedPreferences에 저장
+                  });
+                },
+                style: OutlinedButton.styleFrom(
+                  side: tts_on
+                      ? BorderSide(color: Colors.green, width: 2.0)
+                      : BorderSide(color: Colors.black12, width: 2.0),
+                  backgroundColor: tts_on
+                      ? Colors.green
+                      : Colors.white, // tts_on 상태에 따라 색상 변경
                 ),
-              ),
-              onChanged: (bool value) {
-                setState(() {
-                  tts_on = value;
-                  prefs.setBool('tts_switch', tts_on);
-                });
-              },
-            ),
-            Row(
-              children: [
-                const Text(
-                  "      속도 조절",
+                child: Text(
+                  '말하기 기능',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 30.0,
+                    color: tts_on ? Colors.white : Colors.black12, // 텍스트 색상 변경
                   ),
                 ),
-                Slider(
-                    min: 0.0,
-                    max: 1.0,
-                    value: tts_speed,
-                    onChanged: (double value) {
-                      setState(() {
-                        tts_speed = value;
-                        tts.stop();
-                        tts.setSpeechRate(tts_speed);
-                        prefs.setDouble('speed', tts_speed);
-                        tts.speak("이정도 속도로 말하게 됩니다");
-                      });
-                    }),
-              ],
+              ),
+            ),
+            SizedBox(
+              width: 30,
+              height: 30,
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: [
+                  const Text(
+                    // "      속도 조절",
+                    "말하기 속도 조절",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                    ),
+                  ),
+                  Slider(
+                      min: 0.0,
+                      max: 1.0,
+                      value: tts_speed,
+                      onChanged: (double value) {
+                        print('Slider onChanged 호출됨');
+                        setState(() {
+                          tts_speed = value;
+                          tts.stop();
+                          tts.setSpeechRate(tts_speed);
+                          prefs.setDouble('speed', tts_speed);
+                          // tts.speak("이정도 속도로 말하게 됩니다");
+                        });
+                        if (tts_on) {
+                          tts.speak("이정도 속도로 말하게 됩니다");
+                        }
+                      }),
+                ],
+              ),
             ),
           ],
         )),
@@ -233,7 +366,8 @@ class _ResultScreenState extends State<ResultScreen> {
                 Text(
                   // medicine_store[medicine_id].medicine_name,
                   medicine_list[idx].name,
-                  style: const TextStyle(fontSize: 20),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
                   height: 5.0,
@@ -255,13 +389,13 @@ class _ResultScreenState extends State<ResultScreen> {
           itemBuilder: (context, index) {
             return ListView(
               children: [
-                // _buildItemCard(context, index),
                 _buildItemCard(context),
-
                 Column(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(30.0),
+                      margin: const EdgeInsets.only(
+                          top: 15.0, left: 15.0, right: 15.0),
+                      padding: const EdgeInsets.all(15.0),
                       color: Colors.white,
                       child: TextButton(
                         style: TextButton.styleFrom(
@@ -282,7 +416,9 @@ class _ResultScreenState extends State<ResultScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.all(30.0),
+                      margin: const EdgeInsets.only(
+                          top: 15.0, left: 15.0, right: 15.0),
+                      padding: const EdgeInsets.all(15.0),
                       color: Colors.white,
                       child: TextButton(
                         style: TextButton.styleFrom(
@@ -303,7 +439,9 @@ class _ResultScreenState extends State<ResultScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.all(30.0),
+                      margin: const EdgeInsets.only(
+                          top: 15.0, left: 15.0, right: 15.0),
+                      padding: const EdgeInsets.all(15.0),
                       color: Colors.white,
                       child: TextButton(
                         style: TextButton.styleFrom(
@@ -335,7 +473,7 @@ class _ResultScreenState extends State<ResultScreen> {
             setState(() {
               idx = page;
             });
-            getoperate();
+            getOperate();
           },
         ),
         Positioned(
@@ -349,17 +487,31 @@ class _ResultScreenState extends State<ResultScreen> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
-/*                if (isTtsSpeaking) {
+                if (isTtsSpeaking) {
                   await tts.stop();
                 }
 
                 if (tts_on) {
-                  await tts.speak('${medicine_list[idx].name},');
-                  await tts.speak(medicine_list[idx].effect +
-                      medicine_list[idx].usage +
-                      medicine_list[idx].caution);
-                }*/
-                getoperate();
+                  setState(() {
+                    isTtsSpeaking = true;
+                  });
+                  // await tts.speak('${medicine_list[idx].name}입니다.');
+                  // await Future.delayed(const Duration(milliseconds: 500));
+                  // await tts.speak(medicine_list[idx].effect +
+                  //     medicine_list[idx].usage +
+                  //     medicine_list[idx].caution);
+                  await tts.speak("${medicine_list[idx].name}입니다");
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  await tts.speak(medicine_list[idx].effect);
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  await tts.speak(medicine_list[idx].usage);
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  await tts.speak(medicine_list[idx].caution);
+                  setState(() {
+                    isTtsSpeaking = false;
+                  });
+                }
+                // getOperate();
               },
               child: const Text(
                 "한번 더 듣기",

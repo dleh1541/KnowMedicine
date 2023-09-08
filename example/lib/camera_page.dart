@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:know_medicine/result.dart';
 import 'Previewpage.dart';
 import 'dart:async';
@@ -27,6 +28,7 @@ class _CameraPageState extends State<CameraPage> {
   final FlutterTts tts = FlutterTts();
   double a = 0;
   bool isLoaded = true;
+  DateTime? currentBackPressTime;
 
   @override
   void dispose() {
@@ -274,7 +276,20 @@ class _CameraPageState extends State<CameraPage> {
         ]),
       )),
       onWillPop: () async {
-        return false;
+        // return false;
+        DateTime now = DateTime.now();
+        if (currentBackPressTime == null ||
+            now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+          currentBackPressTime = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('뒤로 가기 버튼을 한 번 더 누르면 앱을 종료합니다.'),
+            ),
+          );
+          return false;
+        }
+        SystemNavigator.pop();
+        return true;
       },
     );
   }
