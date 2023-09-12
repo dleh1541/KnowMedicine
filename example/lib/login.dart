@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:know_medicine/IDInputScreen.dart';
 import 'package:know_medicine/Signup.dart';
 import 'package:know_medicine/splash.dart';
+import 'package:know_medicine/stt.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -169,6 +171,7 @@ class _LoginPageState extends State<LoginScreen> {
                   // Add TextFormField for username input
                   controller: usernameController,
                   decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.account_circle, color: Colors.black26),
                     labelText: '아이디',
                     labelStyle: TextStyle(
                       color: Color(0xFF696363),
@@ -191,6 +194,7 @@ class _LoginPageState extends State<LoginScreen> {
                   // Add TextFormField for password input
                   controller: passwordController,
                   decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.lock, color: Colors.black26),
                     labelText: '비밀번호',
                     labelStyle: TextStyle(
                       color: Color(0xFF726B6B),
@@ -209,8 +213,10 @@ class _LoginPageState extends State<LoginScreen> {
               top: 620,
               child: InkWell(
                 onTap: () {
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => SignupScreen()));
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignupScreen()));
+                      MaterialPageRoute(builder: (context) => IDInputScreen()));
                 },
                 child: Text(
                   '회원가입',
