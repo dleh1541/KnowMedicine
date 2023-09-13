@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_tts/flutter_tts.dart';
 import 'PhoneInputScreen.dart';
 
 class GenderInputScreen extends StatefulWidget {
@@ -22,6 +22,19 @@ class GenderInputScreen extends StatefulWidget {
 class _GenderInputScreenState extends State<GenderInputScreen> {
   String? selectedGender; // 선택한 성별을 저장할 변수
   String? errorMessage; // 에러 메시지
+  FlutterTts flutterTts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+    _speakGuideMessage();
+  }
+
+  void _speakGuideMessage() async {
+    await flutterTts.setLanguage('ko-KR'); // 한국어 설정
+    await flutterTts.setSpeechRate(0.5); // 읽는 속도 설정
+    await flutterTts.speak('성별을 선택해주세요.'); // 원하는 메시지 읽기
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +62,7 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
                     setState(() {
                       selectedGender = value;
                       errorMessage = null;
+                      flutterTts.speak('남성');
                     });
                   },
                 ),
@@ -60,6 +74,7 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
                     setState(() {
                       selectedGender = value;
                       errorMessage = null;
+                      flutterTts.speak('여성');
                     });
                   },
                 ),
@@ -87,6 +102,7 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
                 if (selectedGender == null) {
                   setState(() {
                     errorMessage = '성별을 선택해주세요.';
+                    flutterTts.speak('성별이 선택되지 않았습니다. 성별을 선택해주세요.');
                   });
                 } else {
                   // 다음 단계로 이동
@@ -104,7 +120,7 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
                   );
                 }
               },
-              child: Text('다음',style: TextStyle(fontSize: 24)),
+              child: Text('다음', style: TextStyle(fontSize: 24)),
             ),
           ],
         ),

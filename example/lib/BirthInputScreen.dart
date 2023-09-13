@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_tts/flutter_tts.dart';
 import 'GenderInputScreen.dart';
 
 class BirthInputScreen extends StatefulWidget {
@@ -16,6 +16,19 @@ class BirthInputScreen extends StatefulWidget {
 class _BirthInputScreenState extends State<BirthInputScreen> {
   DateTime? selectedDate; // 선택한 날짜를 저장할 변수
   String? errorMessage; // 에러 메시지
+  FlutterTts flutterTts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+    _speakGuideMessage();
+  }
+
+  void _speakGuideMessage() async {
+    await flutterTts.setLanguage('ko-KR'); // 한국어 설정
+    await flutterTts.setSpeechRate(0.5); // 읽는 속도 설정
+    await flutterTts.speak('생년월일을 입력해주세요.'); // 원하는 메시지 읽기
+  }
 
   // 생년월일 선택 팝업 호출
   Future<void> _selectDate(BuildContext context) async {
@@ -30,6 +43,10 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
       setState(() {
         selectedDate = picked;
         errorMessage = null;
+        String date = selectedDate!.toLocal().toString().split(' ')[0];
+        List<String> dateParts = date.split('-');
+        flutterTts.speak(
+            "${dateParts[0]}년 ${dateParts[1]}월 ${dateParts[2]}일, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
       });
     }
   }
@@ -60,7 +77,10 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
                 const SizedBox(
                   width: 10,
                 ),
-                Text(selectedDate?.toLocal().toString().split(' ')[0] ?? '', style: TextStyle(fontSize: 24),)
+                Text(
+                  selectedDate?.toLocal().toString().split(' ')[0] ?? '',
+                  style: TextStyle(fontSize: 24),
+                )
               ],
             ),
             if (errorMessage != null)
