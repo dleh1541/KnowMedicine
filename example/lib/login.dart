@@ -6,7 +6,9 @@ import 'package:know_medicine/IDInputScreen.dart';
 import 'package:know_medicine/Signup.dart';
 import 'package:know_medicine/splash.dart';
 import 'package:know_medicine/stt.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,9 +19,12 @@ class _LoginPageState extends State<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs; // SharedPreferences 객체
+  var logger = Logger(
+    printer: PrettyPrinter(methodCount: 0),
+  );
 
   Future<void> loginUser() async {
-    print('loginUser() 호출됨');
+    logger.d('loginUser() 호출됨');
     prefs = await SharedPreferences.getInstance();
 
     const urlString = 'http://192.168.55.176:3306/login';
@@ -138,157 +143,127 @@ class _LoginPageState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Container(
-        width: double.infinity,
-        // height: double.infinity,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.white,
-        child: Stack(
-          children: [
-            Positioned(
-              left: 90,
-              top: 150,
-              child: Container(
+        body: Padding(
+      padding: const EdgeInsets.all(30.0),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SvgPicture.asset(
+                'assets/image/silla.svg',
                 width: 180,
                 height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: AssetImage('assets/image/silla2.png'), // 로컬 이미지의 경로
-                  ),
-                ),
               ),
-            ), // 로고
-            Positioned(
-              left: 37,
-              top: 369,
-              child: SizedBox(
-                width: 291,
-                height: 62,
-                child: TextFormField(
-                  // Add TextFormField for username input
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.account_circle, color: Colors.black26),
-                    labelText: '아이디',
-                    labelStyle: TextStyle(
-                      color: Color(0xFF696363),
-                      fontSize: 20,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
+              const SizedBox(
+                height: 20,
               ),
-            ), // 아이디
-            Positioned(
-              left: 37,
-              top: 462,
-              child: SizedBox(
-                width: 291,
-                height: 62,
-                child: TextFormField(
-                  // Add TextFormField for password input
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock, color: Colors.black26),
-                    labelText: '비밀번호',
-                    labelStyle: TextStyle(
-                      color: Color(0xFF726B6B),
-                      fontSize: 20,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: OutlineInputBorder(),
+              TextFormField(
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.account_circle, color: Colors.black26),
+                  hintText: '아이디',
+                  hintStyle: TextStyle(
+                    fontSize: 20,
                   ),
-                  obscureText: true,
+                  border: OutlineInputBorder(),
                 ),
+                style: const TextStyle(fontSize: 20),
               ),
-            ), // 비밀번호
-            Positioned(
-              left: 77,
-              top: 620,
-              child: InkWell(
-                onTap: () {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => SignupScreen()));
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => IDInputScreen()));
-                },
-                child: Text(
-                  '회원가입',
+              const SizedBox(
+                height: 15,
+              ),
+              TextFormField(
+                // Add TextFormField for password input
+                controller: passwordController,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.lock, color: Colors.black26),
+                  hintText: '비밀번호',
+                  hintStyle: TextStyle(
+                    fontSize: 20,
+                  ),
+                  border: OutlineInputBorder(),
+                ),
+                style: const TextStyle(fontSize: 20),
+                obscureText: true,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                onPressed: loginUser, // '로그인' 버튼을 누르면 loginUser 함수 호출
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF38BEEF),
+                  minimumSize: const Size.fromHeight(60),
+                ),
+                child: const Text(
+                  '로그인',
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
+                    color: Colors.white,
+                    fontSize: 24,
                     fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ), // 회원가입
-            Positioned(
-              left: 210,
-              top: 620,
-              child: Text(
-                '비밀번호 찾기',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                ),
+              const SizedBox(
+                height: 20,
               ),
-            ), // 비밀번호 찾기
-            Positioned(
-              left: 37,
-              top: 545,
-              child: Container(
-                width: 291,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: loginUser, // '로그인' 버튼을 누르면 loginUser 함수 호출
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF38BEEF),
-                  ),
-                  child: Text(
-                    '로그인',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ), // 로그인 버튼
-
-            Positioned(
-                left: 37,
-                top: 650,
-                child: Container(
-                  width: 291,
-                  height: 54,
-                  child: ElevatedButton(
-                    onPressed: logoutUser,
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF38BEEF),
-                    ),
-                    child: Text(
-                      '로그아웃',
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) => SignupScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => IDInputScreen()));
+                    },
+                    child: const Text(
+                      '회원가입',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 18,
                         fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
-                )), // 로그아웃 버튼
-          ],
+                  InkWell(
+                    onTap: () {},
+                    child: const Text(
+                      '비밀번호 찾기',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // ElevatedButton(
+              //   onPressed: logoutUser,
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Color(0xFF38BEEF),
+              //   ),
+              //   child: Text(
+              //     '로그아웃',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 20,
+              //       fontFamily: 'Inter',
+              //       fontWeight: FontWeight.w700,
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
     ));

@@ -4,6 +4,7 @@ import 'PwInputScreen.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:logger/logger.dart';
 
 class IDInputScreen extends StatefulWidget {
   @override
@@ -19,6 +20,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
   FlutterTts flutterTts = FlutterTts();
   final effectSound = AudioPlayer();
   bool _isInputComplete = false;
+  bool _isListening = false;
 
   @override
   void initState() {
@@ -26,6 +28,16 @@ class _IDInputScreenState extends State<IDInputScreen> {
     _initSpeech();
     _speakGuideMessage();
   }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  var logger = Logger(
+    printer: PrettyPrinter(methodCount: 0),
+  );
 
   void _speakGuideMessage() async {
     await flutterTts.setLanguage('ko-KR'); // 한국어 설정
@@ -42,6 +54,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
 
   /// Each time to start a speech recognition session
   void _startListening() async {
+    // logger.d("_startListening() 호출: ${DateTime.now().toLocal()}");
     effectSound.play(AssetSource("stt_start.mp3"));
     await _speechToText.listen(onResult: _onSpeechResult);
     setState(() {});
@@ -52,6 +65,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
   /// and the SpeechToText plugin supports setting timeouts on the
   /// listen method.
   void _stopListening() async {
+    // logger.d("_stopListening() 호출: ${DateTime.now().toLocal()}");
     await _speechToText.stop();
     setState(() {});
   }
@@ -63,7 +77,8 @@ class _IDInputScreenState extends State<IDInputScreen> {
       _lastWords = result.recognizedWords;
       textController.text = _lastWords;
       print("_lastWords: ${textController.text}");
-      await flutterTts.speak("입력된 ID: ${textController.text}, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
+      await flutterTts.speak(
+          "입력된 ID: ${textController.text}, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
     });
   }
 
@@ -101,28 +116,54 @@ class _IDInputScreenState extends State<IDInputScreen> {
                           labelText: '아이디 입력', border: OutlineInputBorder()),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      if (_speechEnabled) {
-                        if (!_speechToText.isListening) {
-                          _startListening();
+                  Container(
+                    width: double.infinity, // 원하는 가로 너비로 조절
+                    child: InkWell(
+                      onTap: () {
+                        // 아이콘 버튼이 클릭되었을 때 실행할 코드
+                        if (_speechEnabled) {
+                          if (!_speechToText.isListening) {
+                            _startListening();
+                          } else {
+                            _stopListening();
+                          }
                         } else {
-                          _stopListening();
+                          print("Error: 음성인식 불가");
                         }
-                      } else {
-                        print("Error: 음성인식 불가");
-                      }
-                    },
-                    icon: Icon(
-                        _speechToText.isListening ? Icons.stop : Icons.mic),
-                    iconSize: 100,
+                      },
+                      child: Icon(
+                        _speechToText.isListening ? Icons.stop : Icons.mic,
+                        size: 100,
+                      ),
+                    ),
                   ),
+                  // IconButton(
+                  //   onPressed: () {
+                  //     // setState(() {
+                  //     //   _isListening = !_isListening;
+                  //     // });
+                  //
+                  //     if (_speechEnabled) {
+                  //       if (!_speechToText.isListening) {
+                  //         _startListening();
+                  //       } else {
+                  //         _stopListening();
+                  //       }
+                  //     } else {
+                  //       print("Error: 음성인식 불가");
+                  //     }
+                  //   },
+                  //   icon: Icon(
+                  //       _speechToText.isListening ? Icons.stop : Icons.mic),
+                  //   // _isListening ? Icons.stop : Icons.mic),
+                  //   iconSize: 100,
+                  // ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                      minimumSize: Size(double.infinity, 0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 50, horizontal: 50),
+                      minimumSize: const Size(double.infinity, 0),
                       shape: RoundedRectangleBorder(
                         borderRadius:
                             BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
@@ -142,7 +183,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
                         );
                       }
                     },
-                    child: Text('다음', style: TextStyle(fontSize: 24)),
+                    child: const Text('다음', style: TextStyle(fontSize: 24)),
                   ),
                 ],
               ),

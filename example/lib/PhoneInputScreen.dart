@@ -121,26 +121,47 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    if (_speechEnabled) {
-                      if (!_speechToText.isListening) {
-                        _startListening();
+                Container(
+                  width: double.infinity, // 원하는 가로 너비로 조절
+                  child: InkWell(
+                    onTap: () {
+                      // 아이콘 버튼이 클릭되었을 때 실행할 코드
+                      if (_speechEnabled) {
+                        if (!_speechToText.isListening) {
+                          _startListening();
+                        } else {
+                          _stopListening();
+                        }
                       } else {
-                        _stopListening();
+                        print("Error: 음성인식 불가");
                       }
-                    } else {
-                      print("Error: 음성인식 불가");
-                    }
-                  },
-                  icon:
-                      Icon(_speechToText.isListening ? Icons.stop : Icons.mic),
-                  iconSize: 100,
+                    },
+                    child: Icon(
+                      _speechToText.isListening ? Icons.stop : Icons.mic,
+                      size: 100,
+                    ),
+                  ),
                 ),
+                // IconButton(
+                //   onPressed: () {
+                //     if (_speechEnabled) {
+                //       if (!_speechToText.isListening) {
+                //         _startListening();
+                //       } else {
+                //         _stopListening();
+                //       }
+                //     } else {
+                //       print("Error: 음성인식 불가");
+                //     }
+                //   },
+                //   icon:
+                //       Icon(_speechToText.isListening ? Icons.stop : Icons.mic),
+                //   iconSize: 100,
+                // ),
                 SizedBox(height: 16.0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                    padding: EdgeInsets.symmetric(vertical: 50, horizontal: 50),
                     minimumSize: Size(double.infinity, 0),
                     shape: RoundedRectangleBorder(
                       borderRadius:

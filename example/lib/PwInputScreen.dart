@@ -75,7 +75,8 @@ class _PwInputScreenState extends State<PwInputScreen> {
       confirmPasswordController.text = _lastWords;
       print("_lastWords: ${passwordController.text}");
       await flutterTts.stop();
-      await flutterTts.speak("입력된 비밀번호: ${passwordController.text}, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
+      await flutterTts.speak(
+          "입력된 비밀번호: ${passwordController.text}, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
     });
   }
 
@@ -134,27 +135,47 @@ class _PwInputScreenState extends State<PwInputScreen> {
                       },
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      if (_speechEnabled) {
-                        if (!_speechToText.isListening) {
-                          _startListening();
+                  Container(
+                    width: double.infinity,
+                    child: InkWell(
+                      onTap: () {
+                        if (_speechEnabled) {
+                          if (!_speechToText.isListening) {
+                            _startListening();
+                          } else {
+                            _stopListening();
+                          }
                         } else {
-                          _stopListening();
+                          print("Error: 음성인식 불가");
                         }
-                      } else {
-                        print("Error: 음성인식 불가");
-                      }
-                    },
-                    icon: Icon(
-                        _speechToText.isListening ? Icons.stop : Icons.mic),
-                    iconSize: 100,
+                      },
+                      child: Icon(
+                        _speechToText.isListening ? Icons.stop : Icons.mic,
+                        size: 100,
+                      ),
+                    ),
                   ),
+                  // IconButton(
+                  //   onPressed: () {
+                  //     if (_speechEnabled) {
+                  //       if (!_speechToText.isListening) {
+                  //         _startListening();
+                  //       } else {
+                  //         _stopListening();
+                  //       }
+                  //     } else {
+                  //       print("Error: 음성인식 불가");
+                  //     }
+                  //   },
+                  //   icon: Icon(
+                  //       _speechToText.isListening ? Icons.stop : Icons.mic),
+                  //   iconSize: 100,
+                  // ),
                   SizedBox(height: 16.0),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                          EdgeInsets.symmetric(vertical: 50, horizontal: 50),
                       minimumSize: Size(double.infinity, 0),
                       shape: RoundedRectangleBorder(
                         borderRadius:

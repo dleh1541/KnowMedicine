@@ -68,20 +68,19 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
             Text('이름: ${widget.name}'),
             // if (selectedDate != null)
             //   Text('생년월일: ${selectedDate!.toLocal()}'.split(' ')[0]),
-            Row(
-              children: [
-                OutlinedButton(
-                  onPressed: () => _selectDate(context), // 날짜 선택 팝업 호출
-                  child: Text('생년월일 선택', style: TextStyle(fontSize: 24)),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  selectedDate?.toLocal().toString().split(' ')[0] ?? '',
-                  style: TextStyle(fontSize: 24),
-                )
-              ],
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 100)),
+              onPressed: () => _selectDate(context), // 날짜 선택 팝업 호출
+              child: const Text('생년월일 선택',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            Text(
+              selectedDate?.toLocal().toString().split(' ')[0] ?? '',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             if (errorMessage != null)
               Padding(
@@ -91,11 +90,12 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
                   style: TextStyle(color: Colors.red),
                 ),
               ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                minimumSize: Size(double.infinity, 0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 50, horizontal: 50),
+                minimumSize: const Size(double.infinity, 0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
                 ),
@@ -122,7 +122,7 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
                   );
                 }
               },
-              child: Text(
+              child: const Text(
                 '다음',
                 style: TextStyle(fontSize: 24),
               ),
