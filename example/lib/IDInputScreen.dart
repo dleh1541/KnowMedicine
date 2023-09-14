@@ -99,6 +99,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
                   Form(
                     key: _formKey,
                     child: TextFormField(
+                      style: TextStyle(fontSize: 20),
                       maxLength: 20,
                       validator: (value) {
                         // if (value!.length < 5) {
@@ -116,7 +117,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
                           labelText: '아이디 입력', border: OutlineInputBorder()),
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     width: double.infinity, // 원하는 가로 너비로 조절
                     child: InkWell(
                       onTap: () {

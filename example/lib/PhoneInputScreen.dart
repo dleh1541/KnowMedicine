@@ -105,6 +105,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                 Form(
                   key: _formKey,
                   child: TextFormField(
+                    style: TextStyle(fontSize: 20),
                     validator: (value) {
                       if (value!.length != 11) {
                         flutterTts.speak('올바르지 않은 전화번호입니다. 다시 입력해주세요.');

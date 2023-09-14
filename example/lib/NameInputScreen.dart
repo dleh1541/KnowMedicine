@@ -35,8 +35,8 @@ class _NameInputScreenState extends State<NameInputScreen> {
   void _speakGuideMessage() async {
     await flutterTts.setLanguage('ko-KR'); // 한국어 설정
     await flutterTts.setSpeechRate(0.5); // 읽는 속도 설정
-    await flutterTts.speak(
-        '이름을 입력해주세요. 화면 중앙을 터치하시면 음성인식으로 이름을 입력할 수 있습니다.'); // 원하는 메시지 읽기
+    await flutterTts
+        .speak('이름을 입력해주세요. 화면 중앙을 터치하시면 음성인식으로 이름을 입력할 수 있습니다.'); // 원하는 메시지 읽기
   }
 
   /// This has to happen only once per app
@@ -93,6 +93,7 @@ class _NameInputScreenState extends State<NameInputScreen> {
                 Form(
                   key: _formKey,
                   child: TextFormField(
+                    style: TextStyle(fontSize: 20),
                     maxLength: 10,
                     controller: nameController,
                     decoration: InputDecoration(

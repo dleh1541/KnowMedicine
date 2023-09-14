@@ -98,10 +98,11 @@ class _PwInputScreenState extends State<PwInputScreen> {
                   Form(
                     key: _passwordKey, // 비밀번호 필드의 GlobalKey를 설정
                     child: TextFormField(
+                      style: const TextStyle(fontSize: 20),
                       maxLength: 30,
                       controller: passwordController,
                       obscureText: true,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           labelText: '비밀번호 입력', border: OutlineInputBorder()),
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -118,6 +119,7 @@ class _PwInputScreenState extends State<PwInputScreen> {
                   Form(
                     key: _confirmPasswordKey, // 비밀번호 확인 필드의 GlobalKey를 설정
                     child: TextFormField(
+                      style: TextStyle(fontSize: 20),
                       maxLength: 30,
                       controller: confirmPasswordController,
                       obscureText: true,

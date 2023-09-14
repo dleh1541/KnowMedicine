@@ -59,75 +59,82 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('아이디: ${widget.id}'),
-            Text('비밀번호: ${widget.pw}'),
-            Text('이름: ${widget.name}'),
-            // if (selectedDate != null)
-            //   Text('생년월일: ${selectedDate!.toLocal()}'.split(' ')[0]),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 100)),
-              onPressed: () => _selectDate(context), // 날짜 선택 팝업 호출
-              child: const Text('생년월일 선택',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Text(
-              selectedDate?.toLocal().toString().split(' ')[0] ?? '',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            if (errorMessage != null)
-              Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Text(
-                  errorMessage!,
-                  style: TextStyle(color: Colors.red),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('아이디: ${widget.id}'),
+                Text('비밀번호: ${widget.pw}'),
+                Text('이름: ${widget.name}'),
+                // if (selectedDate != null)
+                //   Text('생년월일: ${selectedDate!.toLocal()}'.split(' ')[0]),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 100)),
+                  onPressed: () => _selectDate(context), // 날짜 선택 팝업 호출
+                  child: const Text('생년월일 선택',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 ),
-              ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 50, horizontal: 50),
-                minimumSize: const Size(double.infinity, 0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
+                SizedBox(
+                  height: 16,
                 ),
-              ),
-              onPressed: () {
-                if (selectedDate == null) {
-                  setState(() {
-                    errorMessage = '생년월일을 선택해주세요.';
-                  });
-                } else {
-                  // 다음 단계로 이동
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GenderInputScreen(
-                        id: widget.id,
-                        pw: widget.pw,
-                        name: widget.name,
-                        birth:
-                            selectedDate?.toLocal().toString().split(' ')[0] ??
-                                '',
-                      ),
+                Text(
+                  selectedDate?.toLocal().toString().split(' ')[0] ?? '',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                if (errorMessage != null)
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(color: Colors.red),
                     ),
-                  );
-                }
-              },
-              child: const Text(
-                '다음',
-                style: TextStyle(fontSize: 24),
-              ),
+                  ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 50, horizontal: 50),
+                    minimumSize: const Size(double.infinity, 0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
+                    ),
+                  ),
+                  onPressed: () {
+                    if (selectedDate == null) {
+                      setState(() {
+                        errorMessage = '생년월일을 선택해주세요.';
+                      });
+                    } else {
+                      // 다음 단계로 이동
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GenderInputScreen(
+                            id: widget.id,
+                            pw: widget.pw,
+                            name: widget.name,
+                            birth: selectedDate
+                                    ?.toLocal()
+                                    .toString()
+                                    .split(' ')[0] ??
+                                '',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    '다음',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -18,10 +18,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginPageState extends State<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  late SharedPreferences prefs; // SharedPreferences 객체
+  late SharedPreferences prefs;
   var logger = Logger(
     printer: PrettyPrinter(methodCount: 0),
   );
+  final _idKey = GlobalKey<FormState>();
+  final _pwKey = GlobalKey<FormState>();
+  String? errMsg;
 
   Future<void> loginUser() async {
     logger.d('loginUser() 호출됨');
@@ -157,34 +160,51 @@ class _LoginPageState extends State<LoginScreen> {
               const SizedBox(
                 height: 20,
               ),
-              TextFormField(
-                controller: usernameController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.account_circle, color: Colors.black26),
-                  hintText: '아이디',
-                  hintStyle: TextStyle(
-                    fontSize: 20,
+              Form(
+                key: _idKey,
+                child: TextFormField(
+                  style: const TextStyle(fontSize: 20),
+                  controller: usernameController,
+                  decoration: const InputDecoration(
+                    prefixIcon:
+                        Icon(Icons.account_circle, color: Colors.black26),
+                    hintText: '아이디',
+                    hintStyle: TextStyle(
+                      fontSize: 20,
+                    ),
+                    border: OutlineInputBorder(),
                   ),
-                  border: OutlineInputBorder(),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return '아이디를 입력해주세요.';
+                    }
+                  },
                 ),
-                style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(
                 height: 15,
               ),
-              TextFormField(
-                // Add TextFormField for password input
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.lock, color: Colors.black26),
-                  hintText: '비밀번호',
-                  hintStyle: TextStyle(
-                    fontSize: 20,
+              Form(
+                key: _pwKey,
+                child: TextFormField(
+                  // Add TextFormField for password input
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "비밀번호를 입력해주세요.";
+                    }
+                  },
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.lock, color: Colors.black26),
+                    hintText: '비밀번호',
+                    hintStyle: TextStyle(
+                      fontSize: 20,
+                    ),
+                    border: OutlineInputBorder(),
                   ),
-                  border: OutlineInputBorder(),
+                  style: const TextStyle(fontSize: 20),
+                  obscureText: true,
                 ),
-                style: const TextStyle(fontSize: 20),
-                obscureText: true,
               ),
               const SizedBox(
                 height: 10,
@@ -193,7 +213,19 @@ class _LoginPageState extends State<LoginScreen> {
                 height: 10,
               ),
               ElevatedButton(
-                onPressed: loginUser, // '로그인' 버튼을 누르면 loginUser 함수 호출
+                onPressed: () {
+                  final idKeyState = _idKey.currentState!;
+                  final pwKeyState = _pwKey.currentState!;
+
+                  logger.d(
+                      "idKeyState: ${idKeyState.validate()}, pwKeyState: ${pwKeyState.validate()}");
+
+                  if (idKeyState.validate() && pwKeyState.validate()) {
+                    idKeyState.save();
+                    pwKeyState.save();
+                    loginUser();
+                  }
+                }, // '로그인' 버튼을 누르면 loginUser 함수 호출
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF38BEEF),
                   minimumSize: const Size.fromHeight(60),
