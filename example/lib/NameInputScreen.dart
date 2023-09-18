@@ -69,8 +69,7 @@ class _NameInputScreenState extends State<NameInputScreen> {
       nameController.text = _lastWords;
       print("_lastWords: ${nameController.text}");
       await flutterTts.stop();
-      await flutterTts.speak("입력된 이름: ${nameController.text}");
-      await flutterTts.speak("맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
+      await flutterTts.speak("입력된 이름: ${nameController.text}, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
     });
   }
 

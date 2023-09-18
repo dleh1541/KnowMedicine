@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,13 @@ import 'package:know_medicine/login.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logger/logger.dart';
+import 'package:http/http.dart' as http;
+
+var logger = Logger(
+  printer: PrettyPrinter(methodCount: 0),
+);
 
 class PhoneInputScreen extends StatefulWidget {
   final String id;
@@ -33,12 +42,18 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   String _lastWords = '';
   final effectSound = AudioPlayer();
   FlutterTts flutterTts = FlutterTts();
+  late SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
     _initSpeech();
+    initPrefs();
     _speakGuideMessage();
+  }
+
+  Future<void> initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   void _speakGuideMessage() async {
@@ -75,22 +90,90 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() async {
       _lastWords = result.recognizedWords;
-      textController.text = _lastWords;
+      textController.text = _lastWords.replaceAll('-', '');
       print("_lastWords: ${textController.text}");
       await flutterTts.stop();
-      await flutterTts.speak("입력된 전화번호: ${textController.text}");
-      await flutterTts.speak("맞으시면 화면 아래쪽을 눌러 회원가입을 완료하세요.");
+      await flutterTts.speak(
+          "입력된 전화번호: ${textController.text}, 맞으시면 화면 아래쪽을 눌러 회원가입을 완료하세요.");
     });
+  }
+
+  Future<void> signUpUser() async {
+    logger.d('signUpUser() 호출됨');
+
+    prefs.setString("id", widget.id);
+    prefs.setString("pw", widget.pw);
+    prefs.setString("name", widget.name);
+    prefs.setString("birth", widget.birth);
+    prefs.setString("gender", widget.gender);
+    prefs.setString("phone", textController.text);
+
+    // prefs 데이터 확인
+    final allKeys = prefs.getKeys();
+    for (final key in allKeys) {
+      final value = prefs.get(key);
+      logger.d('Key: $key, Value: $value');
+    }
+
+    const urlString = 'http://{회원가입 URL}';
+    final url = Uri.parse(urlString);
+    final response = await http.post(url,
+        body: jsonEncode({
+          'id': widget.id,
+          'pw': widget.pw,
+          'name': widget.name,
+          'birth': widget.birth,
+          'gender': widget.gender,
+          'phone': textController.text
+        }),
+        headers: <String, String>{
+          'Content-Type:': 'application/json; charset=UTF-8',
+        });
+
+    if (response.statusCode == 200) {
+      // 서버로부터 응답을 성공적으로 받았을 때 실행할 코드
+      // 로그인 성공 또는 다른 작업 수행
+      // JSON 응답을 파싱하여 Map 형태로 변환
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      // "access_token" 값을 추출
+      String accessToken = responseData['access_token'];
+      prefs.setString('accessToken', accessToken);
+      prefs.setString('username', widget.id);
+      prefs.setString('password', widget.pw);
+    } else {
+      // 서버로부터 오류 응답을 받았을 때 실행할 코드
+      // 로그인 실패 또는 오류 처리
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("회원가입 실패"),
+            content: const Text("회원가입에 실패했습니다. 다시 시도해주세요."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("확인"),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('회원가입 - 휴대폰 번호 입력'),
+        title: const Text('회원가입 - 휴대폰 번호 입력'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
@@ -105,7 +188,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                 Form(
                   key: _formKey,
                   child: TextFormField(
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                     validator: (value) {
                       if (value!.length != 11) {
                         flutterTts.speak('올바르지 않은 전화번호입니다. 다시 입력해주세요.');
@@ -115,14 +198,14 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     maxLength: 11,
                     keyboardType: TextInputType.number,
                     controller: textController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         labelText: '휴대폰 번호 입력', border: OutlineInputBorder()),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp('[0-9]'))
                     ],
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: double.infinity, // 원하는 가로 너비로 조절
                   child: InkWell(
                     onTap: () {
@@ -159,11 +242,12 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                 //       Icon(_speechToText.isListening ? Icons.stop : Icons.mic),
                 //   iconSize: 100,
                 // ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 50, horizontal: 50),
-                    minimumSize: Size(double.infinity, 0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 50, horizontal: 50),
+                    minimumSize: const Size(double.infinity, 0),
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
@@ -174,9 +258,16 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
 
                     if (formKeyState.validate()) {
                       formKeyState.save();
+                      signUpUser();
                       // 다음 단계로 이동
                       print("${textController.text}");
                       flutterTts.speak("회원가입을 완료했습니다.");
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
                     }
 
                     // Navigator.pushReplacement(
@@ -186,7 +277,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     //   ),
                     // );
                   },
-                  child: Text('완료', style: TextStyle(fontSize: 24)),
+                  child: const Text('완료', style: TextStyle(fontSize: 24)),
                 ),
               ],
             ),

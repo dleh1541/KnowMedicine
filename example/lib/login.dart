@@ -9,10 +9,17 @@ import 'package:know_medicine/stt.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:logger/logger.dart';
+
+var logger = Logger(
+  printer: PrettyPrinter(methodCount: 0),
+);
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginScreen> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginScreen> {
@@ -26,9 +33,28 @@ class _LoginPageState extends State<LoginScreen> {
   final _pwKey = GlobalKey<FormState>();
   String? errMsg;
 
-  Future<void> loginUser() async {
+  @override
+  void initState() {
+    super.initState();
+    initPrefs();
+    autoLogin();
+  }
+
+  Future<void> initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    logger.d("initPrefs() 완료");
+  }
+
+  Future<void> loginUser(String userName, String passWord) async {
     logger.d('loginUser() 호출됨');
     prefs = await SharedPreferences.getInstance();
+
+    // prefs 데이터 확인
+    // final allKeys = prefs.getKeys();
+    // for (final key in allKeys) {
+    //   final value = prefs.get(key);
+    //   logger.d('Key: $key, Value: $value');
+    // }
 
     const urlString = 'http://192.168.55.176:3306/login';
     // final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
@@ -37,8 +63,10 @@ class _LoginPageState extends State<LoginScreen> {
     final response = await http.post(
       url,
       body: jsonEncode({
-        'username': usernameController.text,
-        'password': passwordController.text,
+        // 'username': usernameController.text,
+        // 'password': passwordController.text,
+        'username': userName,
+        'password': passWord,
       }),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -56,10 +84,10 @@ class _LoginPageState extends State<LoginScreen> {
       prefs.setString('accessToken', accessToken);
       prefs.setString('username', usernameController.text);
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SplashScreen()),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => SplashScreen()),
+      // );
     } else {
       // 서버로부터 오류 응답을 받았을 때 실행할 코드
       // 로그인 실패 또는 오류 처리
@@ -143,6 +171,28 @@ class _LoginPageState extends State<LoginScreen> {
     }
   }
 
+  Future<void> autoLogin() async {
+    prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('accessToken');
+    String? id = prefs.getString('username');
+    String? pw = prefs.getString('password');
+
+    if (token != null && id != null && pw != null) {
+      logger.d("액세스 토큰 확인 성공");
+      loginUser(id, pw);
+    } else {
+      logger.d("액세스 토큰 확인 실패");
+      // prefs 정보 출력
+      final allKeys = prefs.getKeys();
+      String prefsData = "";
+      for (final key in allKeys) {
+        final value = prefs.get(key);
+        prefsData += '${key}: ${value}\n';
+      }
+      logger.d(prefsData);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -223,7 +273,11 @@ class _LoginPageState extends State<LoginScreen> {
                   if (idKeyState.validate() && pwKeyState.validate()) {
                     idKeyState.save();
                     pwKeyState.save();
-                    loginUser();
+                    // loginUser(usernameController.text, passwordController.text);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SplashScreen()),
+                    );
                   }
                 }, // '로그인' 버튼을 누르면 loginUser 함수 호출
                 style: ElevatedButton.styleFrom(

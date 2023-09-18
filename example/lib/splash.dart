@@ -1,5 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:know_medicine/login.dart';
 import 'camera_page.dart';
 
 class SplashScreen extends StatefulWidget {
