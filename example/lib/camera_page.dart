@@ -124,7 +124,7 @@ class _CameraPageState extends State<CameraPage> {
 
       //로컬 저장소에서 accesstoken 불러오기
       final accessToken = prefs.getString('accessToken');
-      final user_id = prefs.getString('username');
+      final user_id = prefs.getString('id');
       print(accessToken);
       // 사진 파일 추가
       final file = await http.MultipartFile.fromPath('photo', picture.path);

@@ -140,8 +140,19 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       // "access_token" 값을 추출
       String accessToken = responseData['access_token'];
       await prefs.setString('accessToken', accessToken);
-      await prefs.setString('username', widget.id);
-      await prefs.setString('password', widget.pw);
+      // await prefs.setString('username', widget.id);
+      // await prefs.setString('password', widget.pw);
+      await prefs.setString('id', widget.id);
+      await prefs.setString('pw', widget.pw);
+
+      await flutterTts.speak("회원가입을 완료했습니다.");
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginScreen(),
+        ),
+      );
     } else {
       // 서버로부터 오류 응답을 받았을 때 실행할 코드
       // 로그인 실패 또는 오류 처리
@@ -259,16 +270,16 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
 
                     if (formKeyState.validate()) {
                       formKeyState.save();
+                      print("${textController.text}");
                       signUpUser();
                       // 다음 단계로 이동
-                      print("${textController.text}");
-                      flutterTts.speak("회원가입을 완료했습니다.");
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
+
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const LoginScreen(),
+                      //   ),
+                      // );
                     }
 
                     // Navigator.pushReplacement(

@@ -48,16 +48,7 @@ class _LoginPageState extends State<LoginScreen> {
   Future<void> loginUser(String userName, String passWord) async {
     logger.d('loginUser() 호출됨');
     prefs = await SharedPreferences.getInstance();
-
-    // prefs 데이터 확인
-    // final allKeys = prefs.getKeys();
-    // for (final key in allKeys) {
-    //   final value = prefs.get(key);
-    //   logger.d('Key: $key, Value: $value');
-    // }
-
     const urlString = 'http://192.168.55.176:3306/login';
-    // final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
     final url = Uri.parse(urlString);
 
     final response = await http.post(
@@ -82,7 +73,7 @@ class _LoginPageState extends State<LoginScreen> {
       // "access_token" 값을 추출
       String accessToken = responseData['access_token'];
       prefs.setString('accessToken', accessToken);
-      prefs.setString('username', usernameController.text);
+      // prefs.setString('username', usernameController.text);
 
       Navigator.push(
         context,
@@ -179,25 +170,31 @@ class _LoginPageState extends State<LoginScreen> {
 
     if (token != null && id != null && pw != null) {
       logger.d("액세스 토큰 확인 성공");
+      showPrefs();
       loginUser(id, pw);
     } else {
       logger.d("액세스 토큰 확인 실패");
-      // prefs 정보 출력
-      final allKeys = prefs.getKeys();
-      String prefsData = "";
-      for (final key in allKeys) {
-        final value = prefs.get(key);
-        prefsData += '${key}: ${value}\n';
-      }
-      logger.d(prefsData);
-
+      showPrefs();
       // 토큰 정보가 없을경우 바로 회원가입 화면으로 넘어감
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => IDInputScreen()));
-
+          context, MaterialPageRoute(builder: (context) => IDInputScreen()));
     }
+  }
+
+  void showPrefs() {
+    final allKeys = prefs.getKeys();
+    String prefsData = "";
+    int keyCount = 0;
+
+    for (final key in allKeys) {
+      final value = prefs.get(key);
+      prefsData += '${key}: ${value}';
+      if (++keyCount < allKeys.length) {
+        prefsData += '\n';
+      }
+    }
+
+    logger.d(prefsData);
   }
 
   @override

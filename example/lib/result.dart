@@ -64,6 +64,8 @@ class _ResultScreenState extends State<ResultScreen> {
         );
       }
     });
+
+
   }
 
   @override
@@ -356,7 +358,9 @@ class _ResultScreenState extends State<ResultScreen> {
                   width: MediaQuery.of(context).size.width,
                   child: Image(
                     // image: AssetImage(medicine_store[medicine_id].image_track),
-                    image: AssetImage(medicine_list[idx].thumbLink),
+                    // image: AssetImage(medicine_list[idx].thumbLink),
+                    image: AssetImage(
+                        medicine_list[idx % medicine_list.length].thumbLink),
                     height: 200,
                   ),
                 ),
