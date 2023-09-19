@@ -115,20 +115,21 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       logger.d('Key: $key, Value: $value');
     }
 
-    const urlString = 'http://{회원가입 URL}';
+    const urlString = 'http://192.168.55.176:3306/signup';
     final url = Uri.parse(urlString);
     final response = await http.post(url,
-        body: jsonEncode({
-          'id': widget.id,
-          'pw': widget.pw,
-          'name': widget.name,
-          'birth': widget.birth,
-          'gender': widget.gender,
-          'phone': textController.text
-        }),
-        headers: <String, String>{
-          'Content-Type:': 'application/json; charset=UTF-8',
-        });
+      body: jsonEncode({
+        'id': widget.id,
+        'pw': widget.pw,
+        'name': widget.name,
+        'birth': widget.birth,
+        'gender': widget.gender,
+        'phone': textController.text
+      }),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
     if (response.statusCode == 200) {
       // 서버로부터 응답을 성공적으로 받았을 때 실행할 코드

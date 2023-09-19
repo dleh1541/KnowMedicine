@@ -174,8 +174,8 @@ class _LoginPageState extends State<LoginScreen> {
   Future<void> autoLogin() async {
     prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('accessToken');
-    String? id = prefs.getString('username');
-    String? pw = prefs.getString('password');
+    String? id = prefs.getString('id');
+    String? pw = prefs.getString('pw');
 
     if (token != null && id != null && pw != null) {
       logger.d("액세스 토큰 확인 성공");
@@ -190,6 +190,13 @@ class _LoginPageState extends State<LoginScreen> {
         prefsData += '${key}: ${value}\n';
       }
       logger.d(prefsData);
+
+      // 토큰 정보가 없을경우 바로 회원가입 화면으로 넘어감
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => IDInputScreen()));
+
     }
   }
 
