@@ -139,9 +139,9 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
 
       // "access_token" 값을 추출
       String accessToken = responseData['access_token'];
-      prefs.setString('accessToken', accessToken);
-      prefs.setString('username', widget.id);
-      prefs.setString('password', widget.pw);
+      await prefs.setString('accessToken', accessToken);
+      await prefs.setString('username', widget.id);
+      await prefs.setString('password', widget.pw);
     } else {
       // 서버로부터 오류 응답을 받았을 때 실행할 코드
       // 로그인 실패 또는 오류 처리
