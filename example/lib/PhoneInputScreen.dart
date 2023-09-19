@@ -101,12 +101,12 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   Future<void> signUpUser() async {
     logger.d('signUpUser() 호출됨');
 
-    prefs.setString("id", widget.id);
-    prefs.setString("pw", widget.pw);
-    prefs.setString("name", widget.name);
-    prefs.setString("birth", widget.birth);
-    prefs.setString("gender", widget.gender);
-    prefs.setString("phone", textController.text);
+    await prefs.setString("id", widget.id);
+    await prefs.setString("pw", widget.pw);
+    await prefs.setString("name", widget.name);
+    await prefs.setString("birth", widget.birth);
+    await prefs.setString("gender", widget.gender);
+    await prefs.setString("phone", textController.text);
 
     // prefs 데이터 확인
     final allKeys = prefs.getKeys();
