@@ -84,10 +84,10 @@ class _LoginPageState extends State<LoginScreen> {
       prefs.setString('accessToken', accessToken);
       prefs.setString('username', usernameController.text);
 
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => SplashScreen()),
-      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+      );
     } else {
       // 서버로부터 오류 응답을 받았을 때 실행할 코드
       // 로그인 실패 또는 오류 처리
@@ -273,11 +273,11 @@ class _LoginPageState extends State<LoginScreen> {
                   if (idKeyState.validate() && pwKeyState.validate()) {
                     idKeyState.save();
                     pwKeyState.save();
-                    // loginUser(usernameController.text, passwordController.text);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SplashScreen()),
-                    );
+                    loginUser(usernameController.text, passwordController.text);
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => SplashScreen()),
+                    // );
                   }
                 }, // '로그인' 버튼을 누르면 loginUser 함수 호출
                 style: ElevatedButton.styleFrom(
