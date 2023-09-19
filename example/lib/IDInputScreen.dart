@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'PwInputScreen.dart';
@@ -5,6 +7,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:logger/logger.dart';
+import 'package:http/http.dart' as http;
 
 class IDInputScreen extends StatefulWidget {
   @override
@@ -21,6 +24,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
   final effectSound = AudioPlayer();
   bool _isInputComplete = false;
   bool _isListening = false;
+  bool _isIdAvailable = true;
 
   @override
   void initState() {
@@ -82,6 +86,44 @@ class _IDInputScreenState extends State<IDInputScreen> {
     });
   }
 
+  Future<void> checkId() async {
+    logger.d("checkId() 호출됨");
+
+    const urlString = 'http://192.168.55.176:3306/idValidation';
+    final url = Uri.parse(urlString);
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        'id': textController.text,
+      }),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      setState(() {
+        _isIdAvailable = true;
+      });
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PwInputScreen(id: textController.text),
+        ),
+      );
+    } else {
+      setState(() {
+        _isIdAvailable = false;
+      });
+      flutterTts.speak("이미 사용 중인 아이디입니다.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +159,14 @@ class _IDInputScreenState extends State<IDInputScreen> {
                           labelText: '아이디 입력', border: OutlineInputBorder()),
                     ),
                   ),
+                  if (_isIdAvailable == false)
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      child: const Text(
+                        "이미 사용 중인 아이디입니다.",
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
                   SizedBox(
                     width: double.infinity, // 원하는 가로 너비로 조절
                     child: InkWell(
@@ -174,14 +224,15 @@ class _IDInputScreenState extends State<IDInputScreen> {
                       final formKeyState = _formKey.currentState!;
                       if (formKeyState.validate()) {
                         formKeyState.save();
+                        checkId();
                         // 다음 단계로 이동
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PwInputScreen(id: textController.text),
-                          ),
-                        );
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) =>
+                        //         PwInputScreen(id: textController.text),
+                        //   ),
+                        // );
                       }
                     },
                     child: const Text('다음', style: TextStyle(fontSize: 24)),
