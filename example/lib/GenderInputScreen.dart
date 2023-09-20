@@ -54,10 +54,10 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('아이디: ${widget.id}'),
-                Text('비밀번호: ${widget.pw}'),
-                Text('이름: ${widget.name}'),
-                Text('생년월일: ${widget.birth}'),
+                // Text('아이디: ${widget.id}'),
+                // Text('비밀번호: ${widget.pw}'),
+                // Text('이름: ${widget.name}'),
+                // Text('생년월일: ${widget.birth}'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -133,7 +133,8 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
                     padding: EdgeInsets.symmetric(vertical: 50, horizontal: 50),
                     minimumSize: Size(double.infinity, 0),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
+                      borderRadius:
+                          BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
                     ),
                   ),
                   onPressed: () {

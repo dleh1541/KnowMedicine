@@ -94,7 +94,7 @@ class _PwInputScreenState extends State<PwInputScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('아이디: ${widget.id}'),
+                  // Text('아이디: ${widget.id}'),
                   Form(
                     key: _passwordKey, // 비밀번호 필드의 GlobalKey를 설정
                     child: TextFormField(

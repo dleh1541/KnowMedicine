@@ -69,7 +69,8 @@ class _NameInputScreenState extends State<NameInputScreen> {
       nameController.text = _lastWords;
       print("_lastWords: ${nameController.text}");
       await flutterTts.stop();
-      await flutterTts.speak("입력된 이름: ${nameController.text}, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
+      await flutterTts.speak(
+          "입력된 이름: ${nameController.text}, 맞으시면 화면 아래쪽을 눌러 다음 단계로 이동하세요.");
     });
   }
 
@@ -87,8 +88,8 @@ class _NameInputScreenState extends State<NameInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('아이디: ${widget.id}'),
-                Text('비밀번호: ${widget.pw}'),
+                // Text('아이디: ${widget.id}'),
+                // Text('비밀번호: ${widget.pw}'),
                 Form(
                   key: _formKey,
                   child: TextFormField(

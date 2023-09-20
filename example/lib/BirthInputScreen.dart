@@ -65,9 +65,9 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('아이디: ${widget.id}'),
-                Text('비밀번호: ${widget.pw}'),
-                Text('이름: ${widget.name}'),
+                // Text('아이디: ${widget.id}'),
+                // Text('비밀번호: ${widget.pw}'),
+                // Text('이름: ${widget.name}'),
                 // if (selectedDate != null)
                 //   Text('생년월일: ${selectedDate!.toLocal()}'.split(' ')[0]),
                 OutlinedButton(
@@ -96,11 +96,12 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 50, horizontal: 50),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 50, horizontal: 50),
                     minimumSize: const Size(double.infinity, 0),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
+                      borderRadius:
+                          BorderRadius.circular(30.0), // 원하는 둥글기 정도 조절
                     ),
                   ),
                   onPressed: () {

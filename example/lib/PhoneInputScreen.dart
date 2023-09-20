@@ -117,7 +117,8 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
 
     const urlString = 'http://192.168.55.176:3306/signup';
     final url = Uri.parse(urlString);
-    final response = await http.post(url,
+    final response = await http.post(
+      url,
       body: jsonEncode({
         'id': widget.id,
         'pw': widget.pw,
@@ -192,11 +193,11 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('아이디: ${widget.id}'),
-                Text('비밀번호: ${widget.pw}'),
-                Text('이름: ${widget.name}'),
-                Text('생년월일: ${widget.birth}'),
-                Text('성별: ${widget.gender}'),
+                // Text('아이디: ${widget.id}'),
+                // Text('비밀번호: ${widget.pw}'),
+                // Text('이름: ${widget.name}'),
+                // Text('생년월일: ${widget.birth}'),
+                // Text('성별: ${widget.gender}'),
                 Form(
                   key: _formKey,
                   child: TextFormField(
