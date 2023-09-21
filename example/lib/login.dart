@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginScreen> {
       // "access_token" 값을 추출
       String accessToken = responseData['access_token'];
       prefs.setString('accessToken', accessToken);
-      // prefs.setString('username', usernameController.text);
+      prefs.setString('id', userName);
 
       Navigator.push(
         context,

@@ -147,6 +147,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       await prefs.setString('pw', widget.pw);
 
       await flutterTts.speak("회원가입을 완료했습니다.");
+      await Future.delayed(const Duration(seconds: 3)); // 3초 대기 (TTS가 완료될 때까지)
 
       Navigator.pushReplacement(
         context,

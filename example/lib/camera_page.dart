@@ -49,49 +49,10 @@ class _CameraPageState extends State<CameraPage> {
 
   getInitDate() async {
     prefs = await SharedPreferences.getInstance();
-    a = prefs.getDouble('speed') ?? 0.7;
+    a = prefs.getDouble('speed') ?? 0.5;
     tts.setSpeechRate(a);
     tts.speak("원하시는 의약품을 촬영해주세요");
   }
-
-  // List<Medicine> parseMedicineList(String responseBody) {
-  //   final parsed = jsonDecode(responseBody);
-  //   final medicineList = parsed['medicine_list'] as List;
-  //   return medicineList.map((json) => Medicine.fromJson(json)).toList();
-  // }
-
-/*  List<Medicine> parseMedicineList(String responseBody) {
-    final parsed = jsonDecode(responseBody);
-*/ /*    final medicineListJson = parsed['medicine_list'] as List<dynamic>;
-
-    // medicine_listJson이 문자열로 파싱되었다면 JSON 형식으로 다시 파싱
-    final medicineList = medicineListJson
-        .map((json) => Medicine.fromJson(json as Map<String, dynamic>))
-        .toList();
-
-    return medicineList;*/ /*
-
-*/ /*    if (parsed is List<dynamic>) {
-      // JSON 배열로 파싱 가능한 경우
-      final medicineList = parsed
-          .map((json) => Medicine.fromJson(json as Map<String, dynamic>))
-          .toList();
-      return medicineList;
-    } else if (parsed is Map<String, dynamic> &&
-        parsed.containsKey('medicine_list')) {
-      // 문자열로 파싱된 경우 medicine_list 키로부터 JSON 배열 추출
-      final medicineListJson = parsed['medicine_list'] as List<dynamic>;
-      final medicineList = medicineListJson
-          .map((json) => Medicine.fromJson(json as Map<String, dynamic>))
-          .toList();
-      return medicineList;
-    } else {
-      // 다른 예외 처리 또는 오류 상황에 대한 처리
-      throw Exception('Invalid response format');
-    }*/ /*
-
-
-  }*/
 
   Future takePicture() async {
     if (!_cameraController.value.isInitialized) {
@@ -186,13 +147,6 @@ class _CameraPageState extends State<CameraPage> {
           isLoaded = true;
         });
       }
-
-/*      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => PreviewPage(
-                    picture: picture,
-                  )));*/
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
       return null;
@@ -279,7 +233,8 @@ class _CameraPageState extends State<CameraPage> {
         // return false;
         DateTime now = DateTime.now();
         if (currentBackPressTime == null ||
-            now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+            now.difference(currentBackPressTime!) >
+                const Duration(seconds: 2)) {
           currentBackPressTime = now;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

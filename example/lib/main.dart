@@ -6,20 +6,16 @@ import 'package:know_medicine/Signup.dart';
 import 'splash.dart';
 
 void main() {
-  // WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // FlutterNativeSplash.remove();
     return MaterialApp(
       initialRoute: '\one',
       routes: {
         '\one': (context) => LoginScreen(),
-        // '\one': (context) => LocalAuth(),
       },
     );
   }

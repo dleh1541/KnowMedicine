@@ -35,8 +35,8 @@ class _IDInputScreenState extends State<IDInputScreen> {
 
   @override
   void dispose() {
-    flutterTts.stop();
     super.dispose();
+    // await flutterTts.stop();
   }
 
   var logger = Logger(

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import "dart:io";
 import 'package:audioplayers/audioplayers.dart';
 import 'package:know_medicine/camera_page.dart';
+import 'package:logger/logger.dart';
 
 class ResultScreen extends StatefulWidget {
   // String medicine;
@@ -42,6 +43,9 @@ class _ResultScreenState extends State<ResultScreen> {
   Duration time = Duration(seconds: 1);
   final effectSound = AudioPlayer();
   final audioPath = "soundeffect.wav";
+  var logger = Logger(
+    printer: PrettyPrinter(methodCount: 0),
+  );
 
   @override
   void initState() {
@@ -51,7 +55,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
     Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       if (!isTtsSpeaking) {
-        if (idx < medicine_list.length) {
+        if (idx < medicine_list.length - 1) {
           idx++;
         } else {
           idx = 0;
@@ -64,8 +68,6 @@ class _ResultScreenState extends State<ResultScreen> {
         );
       }
     });
-
-
   }
 
   @override
@@ -91,7 +93,7 @@ class _ResultScreenState extends State<ResultScreen> {
     prefs = await SharedPreferences.getInstance();
     tts_speed = prefs.getDouble('speed') ?? 0.7;
     tts.setSpeechRate(tts_speed);
-    tts_on = prefs.getBool('tts_switch') ?? false;
+    tts_on = prefs.getBool('tts_switch') ?? true;
     setState(() {});
   }
 
