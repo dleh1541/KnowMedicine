@@ -12,6 +12,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import 'globalURL.dart';
+
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras}) : super(key: key);
 
@@ -79,7 +81,8 @@ class _CameraPageState extends State<CameraPage> {
       prefs = await SharedPreferences.getInstance();
 
       // HTTP POST 요청
-      const urlString = 'http://192.168.55.176:3306/photo';
+      // const urlString = 'http://192.168.55.176:3306/photo';
+      const urlString = "$globalURL/photo";
       final uri = Uri.parse(urlString); // 엔드포인트 URL을 수정하세요.
       final request = http.MultipartRequest('POST', uri);
 

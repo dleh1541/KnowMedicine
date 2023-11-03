@@ -1,0 +1,1 @@
+const String globalURL = "http://192.168.22.47:5000";

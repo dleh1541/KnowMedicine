@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 
+import 'globalURL.dart';
+
 var logger = Logger(
   printer: PrettyPrinter(methodCount: 0),
 );
@@ -115,7 +117,8 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       logger.d('Key: $key, Value: $value');
     }
 
-    const urlString = 'http://192.168.55.176:3306/signup';
+    // const urlString = 'http://192.168.55.176:3306/signup';
+    const urlString = "$globalURL/signup";
     final url = Uri.parse(urlString);
     final response = await http.post(
       url,

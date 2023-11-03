@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:logger/logger.dart';
 
+import 'globalURL.dart';
+
 var logger = Logger(
   printer: PrettyPrinter(methodCount: 0),
 );
@@ -48,7 +50,8 @@ class _LoginPageState extends State<LoginScreen> {
   Future<void> loginUser(String userName, String passWord) async {
     logger.d('loginUser() 호출됨');
     prefs = await SharedPreferences.getInstance();
-    const urlString = 'http://192.168.55.176:3306/login';
+    // const urlString = 'http://192.168.55.176:3306/login';
+    const urlString = "$globalURL/login";
     final url = Uri.parse(urlString);
 
     final response = await http.post(
@@ -103,7 +106,8 @@ class _LoginPageState extends State<LoginScreen> {
   }
 
   Future<void> logoutUser() async {
-    const urlString = 'http://192.168.55.176:3306/logout';
+    // const urlString = 'http://192.168.55.176:3306/logout';
+    const urlString = "$globalURL/logout";
     // final url = Uri.parse('http://192.168.55.176:3306/login'); // 서버의 URL을 여기에 입력하세요.
     final url = Uri.parse(urlString);
 

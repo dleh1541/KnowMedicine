@@ -9,6 +9,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 
+import 'globalURL.dart';
+
 class IDInputScreen extends StatefulWidget {
   @override
   _IDInputScreenState createState() => _IDInputScreenState();
@@ -89,7 +91,8 @@ class _IDInputScreenState extends State<IDInputScreen> {
   Future<void> checkId() async {
     logger.d("checkId() 호출됨");
 
-    const urlString = 'http://192.168.55.176:3306/idValidation';
+    // const urlString = 'http://192.168.55.176:3306/idValidation';
+    const urlString = "$globalURL/idValidation";
     final url = Uri.parse(urlString);
     final response = await http.post(
       url,
