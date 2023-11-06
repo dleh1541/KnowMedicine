@@ -123,8 +123,8 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     final response = await http.post(
       url,
       body: jsonEncode({
-        'id': widget.id,
-        'pw': widget.pw,
+        'user_id': widget.id,
+        'password': widget.pw,
         'name': widget.name,
         'birth': widget.birth,
         'gender': widget.gender,
