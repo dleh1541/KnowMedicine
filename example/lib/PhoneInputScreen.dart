@@ -126,7 +126,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         'user_id': widget.id,
         'password': widget.pw,
         'name': widget.name,
-        'birth': widget.birth,
+        'birthday': widget.birth,
         'gender': widget.gender,
         'phone': textController.text
       }),

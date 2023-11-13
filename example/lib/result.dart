@@ -362,7 +362,8 @@ class _ResultScreenState extends State<ResultScreen> {
                     // image: AssetImage(medicine_store[medicine_id].image_track),
                     // image: AssetImage(medicine_list[idx].thumbLink),
                     image: AssetImage(
-                        medicine_list[idx % medicine_list.length].thumbLink),
+                      medicine_list[idx % medicine_list.length].thumbLink ?? 'assets/image/logo.png'
+                    ),
                     height: 200,
                   ),
                 ),

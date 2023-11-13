@@ -254,9 +254,9 @@ class _CameraPageState extends State<CameraPage> {
 }
 
 class Medicine {
-  final int id;
+  final String id;
   final String name;
-  final String thumbLink;
+  final String? thumbLink;
   final String effectType;
   final String effect;
   final String usageType;
@@ -279,15 +279,15 @@ class Medicine {
   // JSON 데이터에서 Medicine 객체로 변환하는 팩토리 메서드
   factory Medicine.fromJson(Map<String, dynamic> json) {
     return Medicine(
-      id: json['ID'],
-      name: json['Name'],
-      thumbLink: json['ThubLink'],
-      effectType: json['Effect_Type'],
-      effect: json['Effect'],
-      usageType: json['Usage_Type'],
-      usage: json['Usage'],
-      cautionType: json['Caution_Type'],
-      caution: json['Caution'],
+      id: json['med_id'],
+      name: json['name'],
+      thumbLink: json['thumbLink'] as String?,
+      effectType: json['effect_type'],
+      effect: json['effect'],
+      usageType: json['usage_type'],
+      usage: json['usage'],
+      cautionType: json['caution_type'],
+      caution: json['caution'],
     );
   }
 }
