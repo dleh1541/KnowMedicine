@@ -10,7 +10,7 @@
 - **FrameWork**: Flutter 3.13.2
 - **Language**: Dart
 - **IDE**: Android Studio Giraffe | 2022.3.1
-- **Database**: Python
+- **Database**: MariaDB
 - **AI Model**: YOLOv8
 
 ## 주요기능
