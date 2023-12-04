@@ -49,7 +49,7 @@ class _IDInputScreenState extends State<IDInputScreen> {
     await flutterTts.setLanguage('ko-KR'); // 한국어 설정
     await flutterTts.setSpeechRate(0.5); // 읽는 속도 설정
     await flutterTts.speak(
-        '회원가입을 시작합니다. 원하시는 ID를 입력해주세요. 화면 중앙을 터치하시면 음성인식으로 이름을 입력할 수 있습니다.'); // 원하는 메시지 읽기
+        '원하시는 ID를 입력해주세요. 화면 중앙을 터치하시면 음성인식으로 이름을 입력할 수 있습니다.'); // 원하는 메시지 읽기
   }
 
   /// This has to happen only once per app

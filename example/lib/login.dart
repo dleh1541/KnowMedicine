@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:know_medicine/AgreeScreen.dart';
 import 'package:know_medicine/IDInputScreen.dart';
 import 'package:know_medicine/Signup.dart';
 import 'package:know_medicine/splash.dart';
@@ -181,7 +182,8 @@ class _LoginPageState extends State<LoginScreen> {
       showPrefs();
       // 토큰 정보가 없을경우 바로 회원가입 화면으로 넘어감
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => IDInputScreen()));
+          // context, MaterialPageRoute(builder: (context) => IDInputScreen()));
+          context, MaterialPageRoute(builder: (context) => AgreeScreen()));
     }
   }
 
@@ -312,10 +314,17 @@ class _LoginPageState extends State<LoginScreen> {
                     onTap: () {
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: (context) => SignupScreen()));
+
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => IDInputScreen()));
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => IDInputScreen()));
+                              builder: (context) => AgreeScreen()));
+
                     },
                     child: const Text(
                       '회원가입',

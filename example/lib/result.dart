@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'store.dart';
@@ -36,6 +37,7 @@ class _ResultScreenState extends State<ResultScreen> {
   int idx = 0;
   late SharedPreferences prefs;
   bool isTtsSpeaking = false; // TTS가 읽고 있는지 여부를 나타내는 변수 추가
+  String userId = "";
 
   // myresultstateful(this.medicine);
   _ResultScreenState(this.medicine_list);
@@ -50,6 +52,7 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   void initState() {
     super.initState();
+    initPrefs();
     tts.setLanguage('ko-KR');
     _setAwaitOptions();
 
@@ -68,6 +71,13 @@ class _ResultScreenState extends State<ResultScreen> {
         );
       }
     });
+  }
+
+  Future<void> initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    logger.d("initPrefs() 완료");
+    userId = prefs.getString('id')!;
+    logger.d(userId);
   }
 
   @override
@@ -232,12 +242,12 @@ class _ResultScreenState extends State<ResultScreen> {
             child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const UserAccountsDrawerHeader(
+            UserAccountsDrawerHeader(
               currentAccountPicture: CircleAvatar(
                 backgroundImage: AssetImage('assets/image/silla.png'),
               ),
-              accountName: Text('신라시스템 인턴'),
-              accountEmail: Text('kgh@silla.com'),
+              accountName: Text(userId + ' 님', style: TextStyle(fontSize: 20),),
+              accountEmail: null,
               decoration: BoxDecoration(
                 color: Colors.green,
                 borderRadius: BorderRadius.only(
@@ -362,8 +372,8 @@ class _ResultScreenState extends State<ResultScreen> {
                     // image: AssetImage(medicine_store[medicine_id].image_track),
                     // image: AssetImage(medicine_list[idx].thumbLink),
                     image: AssetImage(
-                      medicine_list[idx % medicine_list.length].thumbLink ?? 'assets/image/logo.png'
-                    ),
+                        medicine_list[idx % medicine_list.length].thumbLink ??
+                            'assets/image/logo.png'),
                     height: 200,
                   ),
                 ),
