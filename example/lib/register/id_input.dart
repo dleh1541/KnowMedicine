@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'PwInputScreen.dart';
+import 'package:know_medicine/register/pw_input.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 
-import 'globalURL.dart';
+import '../global_url.dart';
 
 class IDInputScreen extends StatefulWidget {
   @override
@@ -147,9 +147,6 @@ class _IDInputScreenState extends State<IDInputScreen> {
                       style: TextStyle(fontSize: 20),
                       maxLength: 20,
                       validator: (value) {
-                        // if (value!.length < 5) {
-                        //   return '5글자 이상 입력해주세요';
-                        // }
                         if (value!.isEmpty) {
                           flutterTts.speak('아이디를 1글자 이상 입력해주세요.');
                           return '1글자 이상 입력해주세요.';

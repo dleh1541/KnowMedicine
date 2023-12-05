@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'PhoneInputScreen.dart';
+import 'package:know_medicine/register/phone_input.dart';
 
 class GenderInputScreen extends StatefulWidget {
   final String id;

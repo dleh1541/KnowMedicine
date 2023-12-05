@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:know_medicine/login.dart';
+import 'package:know_medicine/login/login.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 
-import 'globalURL.dart';
+import '../global_url.dart';
 
 var logger = Logger(
   printer: PrettyPrinter(methodCount: 0),

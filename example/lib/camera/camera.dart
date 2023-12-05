@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:know_medicine/result.dart';
-import 'Previewpage.dart';
+import 'package:know_medicine/result/result.dart';
+import '../legacy/Previewpage.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import 'globalURL.dart';
+import '../global_url.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras}) : super(key: key);

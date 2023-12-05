@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'store.dart';
+import '../legacy/store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "dart:io";
 import 'package:audioplayers/audioplayers.dart';
-import 'package:know_medicine/camera_page.dart';
+import 'package:know_medicine/camera/camera.dart';
 import 'package:logger/logger.dart';
 
 class ResultScreen extends StatefulWidget {
@@ -246,7 +246,10 @@ class _ResultScreenState extends State<ResultScreen> {
               currentAccountPicture: CircleAvatar(
                 backgroundImage: AssetImage('assets/image/silla.png'),
               ),
-              accountName: Text(userId + ' 님', style: TextStyle(fontSize: 20),),
+              accountName: Text(
+                userId + ' 님',
+                style: TextStyle(fontSize: 20),
+              ),
               accountEmail: null,
               decoration: BoxDecoration(
                 color: Colors.green,

@@ -1,18 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:know_medicine/AgreeScreen.dart';
-import 'package:know_medicine/IDInputScreen.dart';
-import 'package:know_medicine/Signup.dart';
+import 'package:know_medicine/legacy/Signup.dart';
 import 'package:know_medicine/splash.dart';
 import 'package:know_medicine/stt.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:logger/logger.dart';
 
-import 'globalURL.dart';
+import '../global_url.dart';
+import '../register/agree.dart';
 
 var logger = Logger(
   printer: PrettyPrinter(methodCount: 0),
@@ -29,12 +29,10 @@ class _LoginPageState extends State<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs;
-  var logger = Logger(
-    printer: PrettyPrinter(methodCount: 0),
-  );
   final _idKey = GlobalKey<FormState>();
   final _pwKey = GlobalKey<FormState>();
   String? errMsg;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -48,6 +46,19 @@ class _LoginPageState extends State<LoginScreen> {
     logger.d("initPrefs() 완료");
   }
 
+  // 로딩 다이얼로그
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
   Future<void> loginUser(String userName, String passWord) async {
     logger.d('loginUser() 호출됨');
     prefs = await SharedPreferences.getInstance();
@@ -55,49 +66,95 @@ class _LoginPageState extends State<LoginScreen> {
     const urlString = "$globalURL/login";
     final url = Uri.parse(urlString);
 
-    final response = await http.post(
-      url,
-      body: jsonEncode({
-        // 'username': usernameController.text,
-        // 'password': passwordController.text,
-        'username': userName,
-        'password': passWord,
-      }),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    try {
+      _showLoadingDialog();
 
-    if (response.statusCode == 200) {
-      // 서버로부터 응답을 성공적으로 받았을 때 실행할 코드
-      // 로그인 성공 또는 다른 작업 수행
-      // JSON 응답을 파싱하여 Map 형태로 변환
-      Map<String, dynamic> responseData = jsonDecode(response.body);
+      final response = await http.post(
+        url,
+        body: jsonEncode({
+          'username': userName,
+          'password': passWord,
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      ).timeout(const Duration(seconds: 5), onTimeout: () {
+        throw TimeoutException('Connection Time Out');
+      });
 
-      // "access_token" 값을 추출
-      String accessToken = responseData['access_token'];
-      prefs.setString('accessToken', accessToken);
-      prefs.setString('id', userName);
+      if (!mounted) return;
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SplashScreen()),
-      );
-    } else {
-      // 서버로부터 오류 응답을 받았을 때 실행할 코드
-      // 로그인 실패 또는 오류 처리
+      Navigator.pop(context);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        String accessToken = responseData['access_token'];
+        prefs.setString('accessToken', accessToken);
+        prefs.setString('id', userName);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SplashScreen()),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("로그인 실패"),
+              content: const Text("아이디 또는 비밀번호가 잘못되었습니다."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("확인"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } on TimeoutException {
+      if (!mounted) return;
+
+      Navigator.pop(context);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("로그인 실패"),
-            content: Text("아이디 또는 비밀번호가 잘못되었습니다."),
+            title: const Text("서버 연결 실패"),
+            content: const Text("서버 연결에 실패했습니다. 나중에 다시 시도해주세요."),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text("확인"),
+                child: const Text("확인"),
+              ),
+            ],
+          );
+        },
+      );
+    } on SocketException {
+      if (!mounted) return;
+
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("네트워크 오류"),
+            content: const Text("기기가 네트워크에 연결되어 있지 않습니다. 네트워크를 확인해주세요."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("확인"),
               ),
             ],
           );
@@ -181,8 +238,9 @@ class _LoginPageState extends State<LoginScreen> {
       logger.d("액세스 토큰 확인 실패");
       showPrefs();
       // 토큰 정보가 없을경우 바로 회원가입 화면으로 넘어감
+      if (!mounted) return;
+
       Navigator.push(
-          // context, MaterialPageRoute(builder: (context) => IDInputScreen()));
           context, MaterialPageRoute(builder: (context) => AgreeScreen()));
     }
   }
@@ -194,7 +252,7 @@ class _LoginPageState extends State<LoginScreen> {
 
     for (final key in allKeys) {
       final value = prefs.get(key);
-      prefsData += '${key}: ${value}';
+      prefsData += '$key: $value';
       if (++keyCount < allKeys.length) {
         prefsData += '\n';
       }
@@ -267,10 +325,7 @@ class _LoginPageState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(
-                height: 10,
-              ),
-              const SizedBox(
-                height: 10,
+                height: 20,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -284,10 +339,6 @@ class _LoginPageState extends State<LoginScreen> {
                     idKeyState.save();
                     pwKeyState.save();
                     loginUser(usernameController.text, passwordController.text);
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => SplashScreen()),
-                    // );
                   }
                 }, // '로그인' 버튼을 누르면 loginUser 함수 호출
                 style: ElevatedButton.styleFrom(
@@ -312,19 +363,10 @@ class _LoginPageState extends State<LoginScreen> {
                 children: [
                   InkWell(
                     onTap: () {
-                      // Navigator.push(context,
-                      //     MaterialPageRoute(builder: (context) => SignupScreen()));
-
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => IDInputScreen()));
-
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => AgreeScreen()));
-
                     },
                     child: const Text(
                       '회원가입',

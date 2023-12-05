@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'BirthInputScreen.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
+
+import 'birth_input.dart';
 
 class NameInputScreen extends StatefulWidget {
   final String id;

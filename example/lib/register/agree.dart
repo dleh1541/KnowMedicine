@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:know_medicine/IDInputScreen.dart';
-import 'package:know_medicine/globalURL.dart';
+import 'package:know_medicine/global_url.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart';
+
+import 'id_input.dart';
 
 class AgreeScreen extends StatefulWidget {
   @override
@@ -95,7 +96,6 @@ class _AgreeScreenState extends State<AgreeScreen> {
                       ),
                     ),
                     onPressed: () {
-                      // Add your button onPressed logic here
                       goNext();
                     },
                     child: const Text(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:know_medicine/LocalAuth.dart';
-import 'package:know_medicine/login.dart';
-import 'package:know_medicine/Signup.dart';
+import 'package:know_medicine/legacy/LocalAuth.dart';
+import 'package:know_medicine/login/login.dart';
+import 'package:know_medicine/legacy/Signup.dart';
 import 'splash.dart';
 
 void main() {
