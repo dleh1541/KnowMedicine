@@ -4,6 +4,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:know_medicine/login/login.dart';
 import 'camera/camera.dart';
 
+/// filename: splash.dart
+/// author: 강병오, 이도훈
+/// date: 2023-12-11
+/// description:
+///     - 카메라 화면에 진입하기 전 스플래시 화면
+///     - 카메라를 불러오는 동안 대기
+
 class SplashScreen extends StatefulWidget {
   @override
   _SplashPageState createState() => _SplashPageState();
@@ -18,6 +25,7 @@ class _SplashPageState extends State<SplashScreen> {
     });
   }
 
+  // 비동기로 카메라를 불러오는 함수
   _asyncMethod() async {
     await availableCameras().then((value) => Navigator.push(context,
         MaterialPageRoute(builder: (_) => CameraPage(cameras: value))));

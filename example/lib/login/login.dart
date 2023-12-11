@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:know_medicine/legacy/Signup.dart';
 import 'package:know_medicine/splash.dart';
-import 'package:know_medicine/stt.dart';
+import 'package:know_medicine/legacy/stt.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,6 +14,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../global_url.dart';
 import '../register/agree.dart';
 
+/// filename: login.dart
+/// author: 강병오, 이도훈
+/// date: 2023-12-11
+/// description:
+///     - 앱 실행 시 가장 먼저 실행되는 화면
+///     - 아이디, 비밀번호를 입력받아 로그인을 수행
+///     - 저장된 회원정보가 있을 시, 자동로그인 수행
+///     - 저장된 회원정보가 없을 시, 회원가입 화면으로 이동
+
+// 콘솔에 디버그용 메세지를 출력하기 위한 Logger 변수 정의
 var logger = Logger(
   printer: PrettyPrinter(methodCount: 0),
 );
@@ -41,12 +51,16 @@ class _LoginPageState extends State<LoginScreen> {
     autoLogin();
   }
 
+  /// SharedPreference를 초기화하는 메서드
+  /// SharedPreference는 key-value 형식으로 데이터를 로컬 디바이스에 저장함
+  /// 회원정보 및 액세스 토큰을 저장하기 위해 사용
   Future<void> initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     logger.d("initPrefs() 완료");
   }
 
-  // 로딩 다이얼로그
+  /// 로딩 다이얼로그
+  /// 로그인 시, 서버와 통신하는 동안 로딩 애니메이션을 표시
   void _showLoadingDialog() {
     showDialog(
       context: context,
@@ -59,6 +73,7 @@ class _LoginPageState extends State<LoginScreen> {
     );
   }
 
+  /// 로그인을 수행하는 메서드
   Future<void> loginUser(String userName, String passWord) async {
     logger.d('loginUser() 호출됨');
     prefs = await SharedPreferences.getInstance();
@@ -67,8 +82,9 @@ class _LoginPageState extends State<LoginScreen> {
     final url = Uri.parse(urlString);
 
     try {
-      _showLoadingDialog();
+      _showLoadingDialog(); // 로딩 애니메이션 작동
 
+      // POST 방식으로 로그인 요청
       final response = await http.post(
         url,
         body: jsonEncode({
@@ -79,25 +95,28 @@ class _LoginPageState extends State<LoginScreen> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       ).timeout(const Duration(seconds: 5), onTimeout: () {
-        throw TimeoutException('Connection Time Out');
+        throw TimeoutException(
+            'Connection Time Out'); // 5초 이상 서버 응답이 없으면 TimeoutException 발생
       });
 
       if (!mounted) return;
 
-      Navigator.pop(context);
+      Navigator.pop(context); // 로딩 애니메이션 중지
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) { // 서버로부터 정상적으로 응답이 왔을 때
         Map<String, dynamic> responseData = jsonDecode(response.body);
 
         String accessToken = responseData['access_token'];
-        prefs.setString('accessToken', accessToken);
-        prefs.setString('id', userName);
+        prefs.setString('accessToken', accessToken); // 액세스 토큰을 sharedPreference에 저장
+        prefs.setString('id', userName); // 아이디도 sharedPreference에 저장
 
+        // 다음 화면으로 이동
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => SplashScreen()),
         );
-      } else {
+      } else { // 서버로부터 응답이 정상적이지 않을 때
+        // 로그인 실패 다이얼로그를 표시
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -116,11 +135,12 @@ class _LoginPageState extends State<LoginScreen> {
           },
         );
       }
-    } on TimeoutException {
+    } on TimeoutException { // TimeoutException 발생 시
       if (!mounted) return;
 
-      Navigator.pop(context);
+      Navigator.pop(context); // 로딩 애니메이션 중지
 
+      // 서버 연결 실패 다이얼로그 표시
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -138,11 +158,12 @@ class _LoginPageState extends State<LoginScreen> {
           );
         },
       );
-    } on SocketException {
+    } on SocketException { // SocketException 발생 시 (네트워크에 연결 되어있지 않을 때)
       if (!mounted) return;
 
-      Navigator.pop(context);
+      Navigator.pop(context); // 로딩 애니메이션 중지
 
+      // 네트워크 오류 다이얼로그 표시
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -163,6 +184,7 @@ class _LoginPageState extends State<LoginScreen> {
     }
   }
 
+  /// 로그아웃을 수행하는 메서드 (현재 미사용)
   Future<void> logoutUser() async {
     // const urlString = 'http://192.168.55.176:3306/logout';
     const urlString = "$globalURL/logout";
@@ -183,7 +205,6 @@ class _LoginPageState extends State<LoginScreen> {
     print('logoutUser() 호출됨');
 
     if (response.statusCode == 200) {
-      // 서버로부터 응답을 성공적으로 받았을 때 실행할 코드
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -202,8 +223,6 @@ class _LoginPageState extends State<LoginScreen> {
         },
       );
     } else {
-      // 서버로부터 오류 응답을 받았을 때 실행할 코드
-      // 로그인 실패 또는 오류 처리
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -224,27 +243,29 @@ class _LoginPageState extends State<LoginScreen> {
     }
   }
 
+  /// 자동 로그인을 수행하는 메서드
   Future<void> autoLogin() async {
     prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('accessToken');
     String? id = prefs.getString('id');
     String? pw = prefs.getString('pw');
 
-    if (token != null && id != null && pw != null) {
+    if (token != null && id != null && pw != null) { // 액세스 토큰, 아이디, 비밀번호가 저장되어 있을 때
       logger.d("액세스 토큰 확인 성공");
       showPrefs();
-      loginUser(id, pw);
+      loginUser(id, pw); // 로그인 메서드 호출
     } else {
       logger.d("액세스 토큰 확인 실패");
       showPrefs();
-      // 토큰 정보가 없을경우 바로 회원가입 화면으로 넘어감
-      if (!mounted) return;
 
+      if (!mounted) return;
+      // 토큰 정보가 없을경우 바로 회원가입 화면으로 넘어감
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => AgreeScreen()));
     }
   }
 
+  /// SharedPreference에 저장된 내용을 출력하는 메서드
   void showPrefs() {
     final allKeys = prefs.getKeys();
     String prefsData = "";
@@ -261,6 +282,7 @@ class _LoginPageState extends State<LoginScreen> {
     logger.d(prefsData);
   }
 
+  // 화면 UI를 정의하는 위젯
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -294,6 +316,7 @@ class _LoginPageState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
+                      // 아이디가 비어있을 때
                       return '아이디를 입력해주세요.';
                     }
                   },
@@ -308,6 +331,7 @@ class _LoginPageState extends State<LoginScreen> {
                   // Add TextFormField for password input
                   validator: (value) {
                     if (value!.isEmpty) {
+                      // 비밀번호가 비어있을 때
                       return "비밀번호를 입력해주세요.";
                     }
                   },
@@ -328,6 +352,7 @@ class _LoginPageState extends State<LoginScreen> {
                 height: 20,
               ),
               ElevatedButton(
+                // '로그인' 버튼
                 onPressed: () {
                   final idKeyState = _idKey.currentState!;
                   final pwKeyState = _pwKey.currentState!;
@@ -338,9 +363,10 @@ class _LoginPageState extends State<LoginScreen> {
                   if (idKeyState.validate() && pwKeyState.validate()) {
                     idKeyState.save();
                     pwKeyState.save();
-                    loginUser(usernameController.text, passwordController.text);
+                    loginUser(usernameController.text,
+                        passwordController.text); // loginUser 메서드 호출
                   }
-                }, // '로그인' 버튼을 누르면 loginUser 함수 호출
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF38BEEF),
                   minimumSize: const Size.fromHeight(60),
@@ -362,7 +388,7 @@ class _LoginPageState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: () { // 회원가입 화면으로 이동
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -379,7 +405,7 @@ class _LoginPageState extends State<LoginScreen> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {}, // 비밀번호 찾기 기능은 미구현
                     child: const Text(
                       '비밀번호 찾기',
                       style: TextStyle(

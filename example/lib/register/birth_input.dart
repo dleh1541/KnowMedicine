@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'gender_input.dart';
 
+/// filename: birth_input.dart
+/// author: 강병오, 이도훈
+/// date: 2023-12-11
+/// description:
+///     - 회원가입 화면 (5)
+///     - 생년월일 입력
+
 class BirthInputScreen extends StatefulWidget {
   final String id;
   final String pw;
@@ -24,13 +31,14 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
     _speakGuideMessage();
   }
 
+  /// 안내 메시지를 재생하는 메서드
   void _speakGuideMessage() async {
     await flutterTts.setLanguage('ko-KR'); // 한국어 설정
     await flutterTts.setSpeechRate(0.5); // 읽는 속도 설정
     await flutterTts.speak('생년월일을 입력해주세요.'); // 원하는 메시지 읽기
   }
 
-  // 생년월일 선택 팝업 호출
+  /// 생년월일 선택 팝업 호출
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
       context: context,
@@ -65,11 +73,6 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Text('아이디: ${widget.id}'),
-                // Text('비밀번호: ${widget.pw}'),
-                // Text('이름: ${widget.name}'),
-                // if (selectedDate != null)
-                //   Text('생년월일: ${selectedDate!.toLocal()}'.split(' ')[0]),
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 100)),
@@ -141,49 +144,3 @@ class _BirthInputScreenState extends State<BirthInputScreen> {
     );
   }
 }
-
-// class _BirthInputScreenState extends State<BirthInputScreen> {
-//   final TextEditingController textController = TextEditingController();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('회원가입 - 생년월일 입력'),
-//       ),
-//       body: Padding(
-//         padding: EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Text('아이디: ${widget.id}'),
-//             Text('비밀번호: ${widget.pw}'),
-//             Text('이름: ${widget.name}'),
-//             TextField(
-//               controller: textController,
-//               decoration: InputDecoration(labelText: '생년월일 입력'),
-//             ),
-//             SizedBox(height: 16.0),
-//             ElevatedButton(
-//               onPressed: () {
-//                 // 다음 단계로 이동
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => GenderInputScreen(
-//                         id: widget.id,
-//                         pw: widget.pw,
-//                         name: widget.name,
-//                         birth: textController.text),
-//                   ),
-//                 );
-//               },
-//               child: Text('다음'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -13,6 +13,14 @@ import 'package:http/http.dart' as http;
 
 import '../global_url.dart';
 
+/// filename: phone_input.dart
+/// author: 강병오, 이도훈
+/// date: 2023-12-11
+/// description:
+///     - 회원가입 화면 (7)
+///     - 전화번호 입력
+///     - 회원가입 성공 시, 로그인 화면으로 이동
+
 var logger = Logger(
   printer: PrettyPrinter(methodCount: 0),
 );
@@ -58,6 +66,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  /// 안내 메시지를 재생하는 메서드
   void _speakGuideMessage() async {
     await flutterTts.setLanguage('ko-KR'); // 한국어 설정
     await flutterTts.setSpeechRate(0.5); // 읽는 속도 설정
@@ -65,30 +74,26 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         '휴대폰 번호를 입력해주세요. 화면 중앙을 터치하시면 음성인식으로 휴대폰 번호를 입력할 수 있습니다.'); // 원하는 메시지 읽기
   }
 
-  /// This has to happen only once per app
+  /// STT용 변수를 초기화하는 메서드
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
     setState(() {});
   }
 
-  /// Each time to start a speech recognition session
+  /// STT 시작하는 메서드
   void _startListening() async {
     effectSound.play(AssetSource('stt_start.mp3'));
     await _speechToText.listen(onResult: _onSpeechResult);
     setState(() {});
   }
 
-  /// Manually stop the active speech recognition session
-  /// Note that there are also timeouts that each platform enforces
-  /// and the SpeechToText plugin supports setting timeouts on the
-  /// listen method.
+  /// STT 중지하는 메서드
   void _stopListening() async {
     await _speechToText.stop();
     setState(() {});
   }
 
-  /// This is the callback that the SpeechToText plugin calls when
-  /// the platform returns recognized words.
+  /// 음성인식 결과를 텍스트로 변환하는 메서드
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() async {
       _lastWords = result.recognizedWords;
@@ -100,6 +105,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     });
   }
 
+  /// 입력받은 정보로 회원가입 수행하는 메서드
   Future<void> signUpUser() async {
     logger.d('signUpUser() 호출됨');
 
@@ -144,8 +150,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       // "access_token" 값을 추출
       String accessToken = responseData['access_token'];
       await prefs.setString('accessToken', accessToken);
-      // await prefs.setString('username', widget.id);
-      // await prefs.setString('password', widget.pw);
       await prefs.setString('id', widget.id);
       await prefs.setString('pw', widget.pw);
 
@@ -197,11 +201,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Text('아이디: ${widget.id}'),
-                // Text('비밀번호: ${widget.pw}'),
-                // Text('이름: ${widget.name}'),
-                // Text('생년월일: ${widget.birth}'),
-                // Text('성별: ${widget.gender}'),
                 Form(
                   key: _formKey,
                   child: TextFormField(
@@ -243,22 +242,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     ),
                   ),
                 ),
-                // IconButton(
-                //   onPressed: () {
-                //     if (_speechEnabled) {
-                //       if (!_speechToText.isListening) {
-                //         _startListening();
-                //       } else {
-                //         _stopListening();
-                //       }
-                //     } else {
-                //       print("Error: 음성인식 불가");
-                //     }
-                //   },
-                //   icon:
-                //       Icon(_speechToText.isListening ? Icons.stop : Icons.mic),
-                //   iconSize: 100,
-                // ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -277,23 +260,9 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                       formKeyState.save();
                       print("${textController.text}");
                       signUpUser();
-                      // 다음 단계로 이동
-
-                      // Navigator.pushReplacement(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const LoginScreen(),
-                      //   ),
-                      // );
                     }
 
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => LoginScreen(),
-                    //   ),
-                    // );
-                  },
+                    },
                   child: const Text('완료', style: TextStyle(fontSize: 24)),
                 ),
               ],

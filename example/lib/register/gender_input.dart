@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:know_medicine/register/phone_input.dart';
 
+/// filename: gender_input.dart
+/// author: 강병오, 이도훈
+/// date: 2023-12-11
+/// description:
+///     - 회원가입 화면 (6)
+///     - 성별 선택
+
 class GenderInputScreen extends StatefulWidget {
   final String id;
   final String pw;
@@ -34,6 +41,7 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
     isSelected = [isMale, isFemale];
   }
 
+  /// 안내 메시지를 재생하는 메서드
   void _speakGuideMessage() async {
     await flutterTts.setLanguage('ko-KR'); // 한국어 설정
     await flutterTts.setSpeechRate(0.5); // 읽는 속도 설정
@@ -54,37 +62,9 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Text('아이디: ${widget.id}'),
-                // Text('비밀번호: ${widget.pw}'),
-                // Text('이름: ${widget.name}'),
-                // Text('생년월일: ${widget.birth}'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    // Radio<String>(
-                    //   value: '남성',
-                    //   groupValue: selectedGender,
-                    //   onChanged: (value) {
-                    //     setState(() {
-                    //       selectedGender = value;
-                    //       errorMessage = null;
-                    //       flutterTts.speak('남성');
-                    //     });
-                    //   },
-                    // ),
-                    // Text('남성', style: TextStyle(fontSize: 24)),
-                    // Radio<String>(
-                    //   value: '여성',
-                    //   groupValue: selectedGender,
-                    //   onChanged: (value) {
-                    //     setState(() {
-                    //       selectedGender = value;
-                    //       errorMessage = null;
-                    //       flutterTts.speak('여성');
-                    //     });
-                    //   },
-                    // ),
-                    // Text('여성', style: TextStyle(fontSize: 24)),
                     ToggleButtons(
                       color: Colors.black26,
                       constraints: BoxConstraints.expand(
@@ -170,51 +150,3 @@ class _GenderInputScreenState extends State<GenderInputScreen> {
     );
   }
 }
-
-// class _GenderInputScreenState extends State<GenderInputScreen> {
-//   final TextEditingController textController = TextEditingController();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('회원가입 - 생년월일 입력'),
-//       ),
-//       body: Padding(
-//         padding: EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Text('아이디: ${widget.id}'),
-//             Text('비밀번호: ${widget.pw}'),
-//             Text('이름: ${widget.name}'),
-//             Text('생년월일: ${widget.birth}'),
-//             TextField(
-//               controller: textController,
-//               decoration: InputDecoration(labelText: '성별 입력'),
-//             ),
-//             SizedBox(height: 16.0),
-//             ElevatedButton(
-//               onPressed: () {
-//                 // 다음 단계로 이동
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => PhoneInputScreen(
-//                         id: widget.id,
-//                         pw: widget.pw,
-//                         name: widget.name,
-//                         birth: widget.birth,
-//                         gender: textController.text),
-//                   ),
-//                 );
-//               },
-//               child: Text('다음'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

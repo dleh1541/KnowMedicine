@@ -14,6 +14,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../global_url.dart';
 
+/// filename: camera.dart
+/// author: 강병오, 이도훈
+/// date: 2023-12-11
+/// description:
+///     - 카메라 기능을 수행하는 화면
+///     - 약품 촬영 후 서버에 업로드
+///     - 이미지 분석 결과를 정상적으로 받으면 결과 화면으로 이동
+
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras}) : super(key: key);
 
@@ -27,7 +35,7 @@ class _CameraPageState extends State<CameraPage> {
   late CameraController _cameraController;
   bool _isRearCameraSelected = true;
   late SharedPreferences prefs;
-  final FlutterTts tts = FlutterTts();
+  final FlutterTts tts = FlutterTts(); // 음성 안내를 위한 TTS 변수 초기화
   double a = 0;
   bool isLoaded = true;
   DateTime? currentBackPressTime;
@@ -49,13 +57,16 @@ class _CameraPageState extends State<CameraPage> {
     getInitDate();
   }
 
+  /// 음성 안내를 제공하는 메서드
   getInitDate() async {
     prefs = await SharedPreferences.getInstance();
-    a = prefs.getDouble('speed') ?? 0.5;
+    a = prefs.getDouble('speed') ?? 0.5; // 말하기 속도 설정
     tts.setSpeechRate(a);
     tts.speak("원하시는 의약품을 촬영해주세요");
   }
 
+  /// 사진 촬영 및 이미지 전송하는 메서드
+  /// 서버 응답에 따라 결과 화면으로 이동하거나 오류 메시지 출력
   Future takePicture() async {
     if (!_cameraController.value.isInitialized) {
       return null;
@@ -81,9 +92,8 @@ class _CameraPageState extends State<CameraPage> {
       prefs = await SharedPreferences.getInstance();
 
       // HTTP POST 요청
-      // const urlString = 'http://192.168.55.176:3306/photo';
       const urlString = "$globalURL/photo";
-      final uri = Uri.parse(urlString); // 엔드포인트 URL을 수정하세요.
+      final uri = Uri.parse(urlString);
       final request = http.MultipartRequest('POST', uri);
 
       //로컬 저장소에서 accesstoken 불러오기
@@ -103,14 +113,11 @@ class _CameraPageState extends State<CameraPage> {
 
       final response = await request.send();
 
-      if (response.statusCode == 200) {
-        // 성공적으로 업로드된 경우 처리
+      if (response.statusCode == 200) { // 성공적으로 업로드된 경우 처리
         print('사진 업로드 성공');
 
         final responseText = await response.stream.bytesToString();
         print('서버에서 받은 텍스트 데이터: $responseText');
-
-        // final medicineList = parseMedicineList(responseText);
 
         // JSON 문자열을 Map으로 파싱
         Map<String, dynamic> jsonData = json.decode(responseText);
@@ -125,8 +132,7 @@ class _CameraPageState extends State<CameraPage> {
         });
 
         // Name이 "뒷면"인 Medicine 객체가 있는지 확인
-        bool containsBackSide =
-            medicineList.any((medicine) => medicine.name == '뒷면');
+        bool containsBackSide = medicineList.any((medicine) => medicine.name == '뒷면');
 
         // ResultScreen으로 데이터를 전달하고 화면 전환
         if (medicineList.isNotEmpty && !containsBackSide) {
@@ -142,8 +148,7 @@ class _CameraPageState extends State<CameraPage> {
         } else {
           tts.speak("다시 촬영해주세요");
         }
-      } else {
-        // 업로드 실패 또는 오류 처리
+      } else { // 업로드 실패 또는 오류 처리
         print('사진 업로드 실패: ${response.reasonPhrase}');
         tts.speak('네트워크 오류입니다. 다시 시도해주세요.');
         setState(() {
@@ -156,9 +161,10 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
+  /// 카메라를 초기화하는 메서드
   Future initCamera(CameraDescription cameraDescription) async {
-    _cameraController =
-        CameraController(cameraDescription, ResolutionPreset.high);
+    _cameraController = CameraController(cameraDescription, ResolutionPreset.high);
+
     try {
       await _cameraController.initialize().then((_) {
         if (!mounted) return;
@@ -169,8 +175,10 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
+  /// 카메라 화면 UI
   @override
   Widget build(BuildContext context) {
+    // 로딩 애니메이션
     if (!isLoaded) {
       return const Scaffold(
         backgroundColor: Colors.green, //Colors.amber
@@ -233,7 +241,6 @@ class _CameraPageState extends State<CameraPage> {
         ]),
       )),
       onWillPop: () async {
-        // return false;
         DateTime now = DateTime.now();
         if (currentBackPressTime == null ||
             now.difference(currentBackPressTime!) >
@@ -253,6 +260,7 @@ class _CameraPageState extends State<CameraPage> {
   }
 }
 
+/// 약품 정보를 정의한 클래스
 class Medicine {
   final String id;
   final String name;

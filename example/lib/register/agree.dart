@@ -10,14 +10,19 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import 'id_input.dart';
 
+/// filename: agree.dart
+/// author: 강병오, 이도훈
+/// date: 2023-12-11
+/// description:
+///     - 회원가입 화면 (1)
+///     - 개인정보수집 동의
+
 class AgreeScreen extends StatefulWidget {
   @override
   _AgreeScreenState createState() => _AgreeScreenState();
 }
 
 class _AgreeScreenState extends State<AgreeScreen> {
-  SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
   FlutterTts flutterTts = FlutterTts();
   String agreeText = '';
 
@@ -31,6 +36,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
     _speakAgreeMessage();
   }
 
+  /// 안내 메시지를 재생하는 메서드
   void _speakAgreeMessage() async {
     await flutterTts.setLanguage('ko-KR');
     await flutterTts.setSpeechRate(0.5);
@@ -38,6 +44,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
         '회원가입을 시작합니다. 개인정보수집 약관에 동의해주세요.\n개인정보 수집·이용 목적: KnowMedicine 앱의 회원 서비스 제공에 관련한 목적으로 개인정보를 수집합니다.\n수집·이용하려는 개인정보의 항목: 이름, 생년월일, 성별, 전화번호\n보유 및 이용 기간: 입력일로부터 1년까지\n위 약관에 동의하시면 화면 아래쪽을 눌러 다음 단계로 이동하세요');
   }
 
+  /// 다음 화면으로 이동하는 메서드 (현재 서버 통신은 미구현)
   Future<void> goNext() async {
     /*
     const urlString = "$globalURL/???";
